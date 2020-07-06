@@ -233,6 +233,22 @@ class GrammarLearning(unittest.TestCase):
         self.assertTrue(grammar.is_isomorphic_with(induced_grammar))
         self.assertFalse(induced_grammar.is_recursive())
 
+    def test_readme_example(self):
+        dataset = [
+            "I like cats and dogs",
+            "I like bananas and geese",
+            "I like geese and cats",
+            "bananas are not supposed to be in a salad",
+            "geese are not supposed to be in the zoo",
+        ]
+        induced_grammar = grammar_induction.induce_grammar_using_template_trees(
+            dataset,
+            relative_similarity_threshold=0.1,
+        )
+        print(induced_grammar)
+        print(induced_grammar.generate_all())
+
+
     def test_hello_world_multiple_deep(self):
         # Check if grammar generates same dataset
         grammar = self.check_grammar_induction_correctness(
