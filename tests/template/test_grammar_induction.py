@@ -378,43 +378,6 @@ class GrammarLearning(unittest.TestCase):
             {t.to_flat_string() for t in grammar.get_content_for(word_list_nt)},
         )
 
-    def test_large_data(self):
-        data_file_path = (
-            Path(__file__).parent
-            / ".."
-            / ".."
-            / "data"
-            / "raw"
-            / "scenes_from_a_hat.tsv"
-        )
-        dataset = []
-        min_number_of_interactions = 15
-
-        with open(data_file_path.resolve()) as data_file:
-            i = 0
-            for line in data_file.readlines():
-                i += 1
-                if not "meta" in line.lower():
-                    if not "\t" in line or len(line.split("\t")) < 3:
-                        print("Error line", i, line)
-                    score, comments, text = line.split("\t")
-                    if int(score) + int(comments) >= min_number_of_interactions:
-                        dataset.append(text.strip())
-
-        random.seed(42)
-        random.shuffle(dataset)
-        small_dataset = dataset[:30]
-        grammar = grammar_induction.induce_grammar_using_template_trees(
-            small_dataset,
-            words_per_slot=3,
-            prune_redundant=True,
-            relative_similarity_threshold=0.05,
-            minimal_variables=True,
-        )
-        print(grammar)
-        print("Size", grammar.get_size())
-        print("Recursive", grammar.is_recursive())
-
     def test_botdoesnot_crash(self):
         dataset = [
             "One does not easily lead into Qumar",

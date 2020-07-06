@@ -5,10 +5,7 @@ from src.slot_values import SlotValues
 from src.template import Template
 from src.template_elements import TemplateString, NamedTemplateSlot, SlotAssignment
 from src.template_tree import TemplateTree
-from src.template_tree_learner import (
-    visualise_template_tree_history,
-    LevenshteinTemplateTreeLearner,
-)
+from src.template_tree_learner import visualise_template_tree_history
 from src.template_tree_visualiser import render_tree_string
 
 
@@ -100,9 +97,7 @@ class TemplateTreeLearner(unittest.TestCase):
         t3_reduced_2 = self.t3.reduce_depth(2)
         self.assertEqual(2, t3_reduced_2.get_depth())
         self.assertEqual(
-            TemplateTree(
-                self.t3.get_template(), [self.t1, self.s4, self.s5]
-            ),
+            TemplateTree(self.t3.get_template(), [self.t1, self.s4, self.s5]),
             t3_reduced_2,
         )
 
@@ -208,22 +203,6 @@ class TemplateTreeLearner(unittest.TestCase):
             {self.s1, self.s2, self.s3, self.s4}, set(self.t2.get_descendant_leaves())
         )
         self.assertEqual(set(self.all_s), set(self.t3.get_descendant_leaves()))
-
-    def test_learn_simple_tree_levenshtein(self):
-        """ Test if proper template tree is learned from given sentences"""
-        base_sentences = [t.get_template().to_flat_string() for t in self.all_s]
-        # random.shuffle(base_sentences)
-
-        template_trees = LevenshteinTemplateTreeLearner().learn_template_tree_from_clusters_history(
-            base_sentences
-        )
-        history = visualise_template_tree_history(template_trees)
-        self.assertTrue(bool(history) and len(history.strip()) > 0)
-
-        template_tree = template_trees[-1]
-
-        self.assertEqual(self.u4, template_tree)
-        self.assertEqual(self.t3, template_tree.collapse())
 
     def test_get_slot_content(self):
         self.assertEqual(

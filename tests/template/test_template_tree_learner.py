@@ -11,7 +11,6 @@ from src.template_tree_learner import (
     TemplateTreeLearner,
     LearnerState,
     _to_templates,
-    _get_template_strings_distance,
 )
 from src.template_tree_visualiser import render_tree_string
 
@@ -135,15 +134,6 @@ class TemplateTreeLearnerTest(unittest.TestCase):
         )
         print(template_tree_visualiser.render_tree_string(template_tree))
         self.assertEqual(expected, template_tree)
-
-    def test_get_template_strings_distance(self):
-        t1 = Template.from_string("hello world")
-        t2 = Template.from_string("hi world")
-        t3 = Template.from_string("hello solar system")
-        t4 = Template.from_string("hi solar system")
-        self.assertEqual(1, _get_template_strings_distance(t1, t2))
-        self.assertEqual(2, _get_template_strings_distance(t1, t3))
-        self.assertEqual(3, _get_template_strings_distance(t1, t4))
 
     def test_4_lines_initial_pairs(self):
 

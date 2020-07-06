@@ -368,60 +368,6 @@ class ContextFreeGrammarTest(unittest.TestCase):
         self.assertFalse(gram1.is_isomorphic_with(self.hello_world))
         self.assertFalse(gram2.is_isomorphic_with(self.hello_world))
 
-    def test_tracery_loading(self):
-        with open(
-            str((get_tracery_folder() / "coldteabot.json").absolute()),
-            "r",
-            encoding="utf-8",
-        ) as file:
-            data = file.read()
-
-        cfg = ContextFreeGrammar.from_tracery_string(data)
-        print(cfg)
-        self.assertEqual(8, len(cfg.get_slots()))
-        self.assertEqual(448, len(cfg.generate_all_string()))
-
-    def test_tracery_loading_2(self):
-        with open(
-            str((get_tracery_folder() / "facesbot.json").absolute()),
-            "r",
-            encoding="utf-8",
-        ) as file:
-            data = file.read()
-
-        cfg = ContextFreeGrammar.from_tracery_string(data)
-        print(cfg)
-
-    def test_tracery_modifier_removal(self):
-        with open(
-            str((get_tracery_folder() / "whatkilledme.json").absolute()),
-            "r",
-            encoding="utf-8",
-        ) as file:
-            data = file.read()
-
-        cfg = ContextFreeGrammar.from_tracery_string(data)
-        print(cfg)
-
-        # No element can contain a hashtag: sign that modifier isn't properly removed
-        all_options = []
-        for slot in cfg.get_slots():
-            for el in cfg.get_content_for(slot):
-                all_options.append(el)
-                # Check for slot opener
-                self.assertTrue(
-                    "#" not in el.to_flat_string(),
-                    msg=(el.to_flat_string() + " contains a hashtag"),
-                )
-
-                # Check for regex replace mistake
-                self.assertTrue(
-                    "$" not in el.to_flat_string(),
-                    msg=(el.to_flat_string() + " contains a dollar symbol"),
-                )
-
-        modifier_template = Template.from_string("set <thing> on")
-        self.assertTrue(modifier_template in all_options)
 
     def test_modifier_removal_small(self):
         print(re.match(_tracery_slot_modifier, "#a.a#"))
