@@ -41,12 +41,11 @@ Outputs as grammar:
 }
 ```
 
-And as generations
+And as generations:
 ```
 {"dogs are not supposed to be in the zoo", "cats are not supposed to be in a salad", "I like geese and cats", "cats are not supposed to be in the zoo", "bananas are not supposed to be in a salad", "I like dogs and dogs", "bananas are not supposed to be in the zoo", "I like dogs and bananas", "geese are not supposed to be in the zoo", "geese are not supposed to be in a salad", "I like cats and dogs", "I like dogs and geese", "I like cats and bananas", "I like bananas and dogs", "I like bananas and bananas", "I like cats and geese", "I like geese and dogs", "I like dogs and cats", "I like geese and bananas", "I like bananas and geese", "dogs are not supposed to be in a salad", "I like cats and cats", "I like geese and geese", "I like bananas and cats"}
 ```
 
-## Export to 
 
 ## Paper citation
 
