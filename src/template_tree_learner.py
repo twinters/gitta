@@ -2,11 +2,7 @@ from abc import abstractmethod
 from queue import PriorityQueue
 from typing import List, Collection, Set, Dict
 
-import editdistance
-import numpy as np
 from nltk import word_tokenize
-from sklearn.cluster import AgglomerativeClustering
-from sklearn.metrics import pairwise_distances
 
 from src.template import Template
 from src.template_tree import TemplateTree
@@ -402,43 +398,6 @@ class TemplateLatticeLearner(TemplateTreeLearner):
                 min_distance, other_distance
             )
 
-
-# TREE FROM LEVENSHTEIN CLUSTERING USING SKLEARN AGGLOMERATIVE CLUSTERING
-class LevenshteinTemplateTreeLearner:
-    def __init__(self, minimal_variables: bool = True):
-        self._minimal_variables = minimal_variables
-
-    def learn(self, lines: Collection[str]) -> TemplateTree:
-        template_trees = self.learn_template_tree_from_clusters_history(lines)
-        return (
-            template_trees[-1] if template_trees and len(template_trees) > 0 else None
-        )
-
-    def learn_template_tree_from_clusters_history(
-        self, lines: Collection[str],
-    ) -> List[TemplateTree]:
-        template_trees = _to_template_trees(lines)
-        distances = _calculate_pairwise_distances_levenshtein(
-            [tt.get_template() for tt in template_trees]
-        )
-
-        # Perform agglomerative clustering.
-        # Using a "complete" linkage, meaning that clusters join based on closest to the furthest points
-        agg = AgglomerativeClustering(affinity="precomputed", linkage="complete")
-        fitted = agg.fit(distances)
-
-        # Start calculating & merging Template Trees based on agglomerative clustering
-
-        for clustering in fitted.children_:
-            child1 = template_trees[clustering[0]]
-            child2 = template_trees[clustering[1]]
-            template_trees.append(
-                _merge_template_trees(child1, child2, self._minimal_variables)
-            )
-
-        return template_trees
-
-
 # HELPERS
 
 
@@ -469,29 +428,29 @@ def _to_templates(lines: Collection[str]) -> List[Template]:
     return templates
 
 
-def _get_template_strings_distance(template: Template, other: Template) -> int:
-    """
-     Calculates Levenshtein distance between the two templates.
-     Assumes that both template do not contain slots
-     """
-    assert len(template.get_slots()) == 0
-    assert len(other.get_slots()) == 0
-    return editdistance.eval(template.get_elements(), other.get_elements())
+# def _get_template_strings_distance(template: Template, other: Template) -> int:
+#     """
+#      Calculates Levenshtein distance between the two templates.
+#      Assumes that both template do not contain slots
+#      """
+#     assert len(template.get_slots()) == 0
+#     assert len(other.get_slots()) == 0
+#     return editdistance.eval(template.get_elements(), other.get_elements())
 
 
-def _calculate_pairwise_distances_levenshtein(templated_data: List[Template]):
-    def convert_datapoint(datapoint) -> Template:
-        return templated_data[int(datapoint[0])]
-
-    def template_distance_datapoint(point1, point2):
-        return _get_template_strings_distance(
-            convert_datapoint(point1), convert_datapoint(point2),
-        )
-
-    number_range = np.arange(len(templated_data)).reshape(-1, 1)
-    return pairwise_distances(
-        number_range, number_range, metric=template_distance_datapoint
-    )
+# def _calculate_pairwise_distances_levenshtein(templated_data: List[Template]):
+#     def convert_datapoint(datapoint) -> Template:
+#         return templated_data[int(datapoint[0])]
+#
+#     def template_distance_datapoint(point1, point2):
+#         return _get_template_strings_distance(
+#             convert_datapoint(point1), convert_datapoint(point2),
+#         )
+#
+#     number_range = np.arange(len(templated_data)).reshape(-1, 1)
+#     return pairwise_distances(
+#         number_range, number_range, metric=template_distance_datapoint
+#     )
 
 
 def _merge_template_trees(
