@@ -563,7 +563,8 @@ def _select_lowest_variance_slot_assignment(
 
 
 def _has_ending_slot(
-    elements: List[TemplateElement], merge_named_slots: bool = False
+    elements: List[TemplateElement],
+        merge_named_slots: bool = False
 ) -> bool:
     return (
         len(elements) > 0
@@ -588,24 +589,28 @@ def convert_template_elements_from_wagner_fischer(
                 not minimal_variables
                 or not _has_ending_slot(resulting_elements, merge_named_slots)
             ):
+                # Remove last slot if it is named and there is a new slot coming in
+                if (
+                    new_element.is_slot()
+                    and len(elements) > 1
+                    and merge_named_slots
+                    and elements[len(elements) - 1].is_named()
+                ):
+                    resulting_elements.pop()
                 resulting_elements.append(new_element)
             elements_index += 1
         elif operation == "S":  # SUBSTITUTE -> add slot
             if not minimal_variables or not _has_ending_slot(
-                resulting_elements, merge_named_slots
+                resulting_elements, False
             ):
                 resulting_elements.append(TemplateSlot())
             elements_index += 1
         elif operation == "D":  # DELETE -> skip element
-            if not minimal_variables or not _has_ending_slot(
-                resulting_elements, merge_named_slots
-            ):
+            if not _has_ending_slot(resulting_elements, False):
                 resulting_elements.append(TemplateSlot())
             elements_index += 1
         elif operation == "I":  # INSERT -> add slot & stay
-            if not minimal_variables or not _has_ending_slot(
-                resulting_elements, merge_named_slots
-            ):
+            if not _has_ending_slot(resulting_elements, False):
                 resulting_elements.append(TemplateSlot())
 
     return resulting_elements
