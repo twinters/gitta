@@ -15,7 +15,7 @@ def induce_grammar_using_template_trees(
     prune_redundant: bool = True,
     max_recalculation: Optional[int] = None,
     use_best_merge_candidate=True,
-    max_depth:Optional[int]=None,
+    max_depth: Optional[int] = None,
 ):
     # Learn a tree from the given dataset
     learned_tree = TemplateLatticeLearner(

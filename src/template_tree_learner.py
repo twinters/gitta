@@ -398,6 +398,7 @@ class TemplateLatticeLearner(TemplateTreeLearner):
                 min_distance, other_distance
             )
 
+
 # HELPERS
 
 

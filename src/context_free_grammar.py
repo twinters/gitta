@@ -570,7 +570,7 @@ class ContextFreeGrammar:
 
     @staticmethod
     def replace_modifier_variables(string_with_dict: str):
-        return re.sub(_tracery_slot_modifier, r'#\g<1>#', string_with_dict)
+        return re.sub(_tracery_slot_modifier, r"#\g<1>#", string_with_dict)
 
     @staticmethod
     def from_tracery_string(string_with_dict: str):
@@ -588,9 +588,9 @@ class ContextFreeGrammar:
         return ContextFreeGrammar.from_string(loaded, _tracery_template_parser)
 
 
-_tracery_slot_regex = re.compile(r'#([a-zA-Z0-9_-]+)#')
+_tracery_slot_regex = re.compile(r"#([a-zA-Z0-9_-]+)#")
 _tracery_slot_modifier = re.compile(r"#([a-zA-Z0-9_-]+)\.[a-zA-Z0-9_-]+#")
-_tracery_specifiers_regex = re.compile(r'\[([a-zA-Z0-9_-]+):([a-zA-Z0-9_-]+)\]')
+_tracery_specifiers_regex = re.compile(r"\[([a-zA-Z0-9_-]+):([a-zA-Z0-9_-]+)\]")
 
 
 def _tracery_template_parser(input: str) -> Template:
