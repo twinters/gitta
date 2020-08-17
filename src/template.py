@@ -366,6 +366,7 @@ class Template:
                         template1._elements,
                         alignment,
                         minimal_variables=minimal_variables,
+                        merge_named_slots=True,
                     )
                 )
                 for alignment in distances_table.alignments()
@@ -582,7 +583,12 @@ def convert_template_elements_from_wagner_fischer(
 
     for operation in alignment:
         if operation == "M":  # KEEP
-            resulting_elements.append(elements[elements_index])
+            new_element: TemplateElement = elements[elements_index]
+            if not new_element.is_slot() or (
+                not minimal_variables
+                or not _has_ending_slot(resulting_elements, merge_named_slots)
+            ):
+                resulting_elements.append(new_element)
             elements_index += 1
         elif operation == "S":  # SUBSTITUTE -> add slot
             if not minimal_variables or not _has_ending_slot(
@@ -591,10 +597,15 @@ def convert_template_elements_from_wagner_fischer(
                 resulting_elements.append(TemplateSlot())
             elements_index += 1
         elif operation == "D":  # DELETE -> skip element
-            if not _has_ending_slot(resulting_elements, merge_named_slots):
+            if not minimal_variables or not _has_ending_slot(
+                resulting_elements, merge_named_slots
+            ):
                 resulting_elements.append(TemplateSlot())
             elements_index += 1
         elif operation == "I":  # INSERT -> add slot & stay
-            if not _has_ending_slot(resulting_elements, merge_named_slots):
+            if not minimal_variables or not _has_ending_slot(
+                resulting_elements, merge_named_slots
+            ):
                 resulting_elements.append(TemplateSlot())
+
     return resulting_elements
