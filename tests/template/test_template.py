@@ -163,6 +163,12 @@ class TemplateTest(unittest.TestCase):
             "a [SLOT] <A> e", calculate_merged_string("a b <A> e", "a c <A> e"),
         )
         self.assertEqual(
+            "a <A> [SLOT] e", calculate_merged_string("a <A> b e", "a <A> c e"),
+        )
+        self.assertEqual(
+            "a <A> <B> [SLOT]", calculate_merged_string("a <A> <B> e", "a <A> <B> d"),
+        )
+        self.assertEqual(
             "<X> [SLOT]", calculate_merged_string("<X> a b", "<X> c"),
         )
 
