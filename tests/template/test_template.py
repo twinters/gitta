@@ -173,18 +173,18 @@ class TemplateTest(unittest.TestCase):
 
         t12 = Template([self.slot_x, self.a, self.slot1])
         self.assertEqual(t12, Template.merge_all([t1, t2]))
-        self.assertEqual(t12, Template.merge_all([t1, t2], t12))
+        self.assertEqual(t12, Template.merge_all([t1, t2, t12]))
 
         t123 = Template([self.slot_x, self.slot1])
         self.assertEqual(t123, Template.merge_all([t12, t3]))
-        self.assertEqual(t123, Template.merge_all([t12, t3], t123))
+        self.assertEqual(t123, Template.merge_all([t12, t3, t123]))
         self.assertEqual(t123, Template.merge_all([t3, t12]))
-        self.assertEqual(t123, Template.merge_all([t3, t12], t123))
+        self.assertEqual(t123, Template.merge_all([t3, t12, t123]))
 
         self.assertEqual(t123, Template.merge_all([t1, t2, t3]))
-        self.assertEqual(t123, Template.merge_all([t1, t2, t3], t123))
+        self.assertEqual(t123, Template.merge_all([t1, t2, t3, t123]))
         self.assertEqual(t123, Template.merge_all([t3, t2, t1]))
-        self.assertEqual(t123, Template.merge_all([t3, t2, t1], t123))
+        self.assertEqual(t123, Template.merge_all([t3, t2, t1, t123]))
 
     def test_extract_content_small(self):
         self.assertEqual(
