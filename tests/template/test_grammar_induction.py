@@ -181,6 +181,27 @@ class GrammarLearning(unittest.TestCase):
         )
         print(grammar)
 
+    def test_from_text_notebook_example(self):
+        dataset = [
+            "I like my cat and my dog",
+            "I like my dog and my chicken",
+            "Alice the cat is jumping",
+            "Bob the dog is walking",
+            "Cathy the cat is walking",
+        ]
+        expected_grammar = ContextFreeGrammar.from_string(
+            {
+                "origin": ["<G> the <C> is <D>", "I like my <C> and my <C>"],
+                "C": ["cat", "chicken", "dog"],
+                "G": ["Alice", "Bob", "Cathy"],
+                "D": ["jumping", "walking"],
+            }
+        )
+        induced_grammar = grammar_induction.induce_grammar_using_template_trees(
+            dataset, words_per_slot=1, relative_similarity_threshold=0.1,
+        )
+        self.assertTrue(expected_grammar.is_isomorphic_with(induced_grammar))
+
     def test_repeat_2(self):
         grammar = ContextFreeGrammar.from_string(
             {
@@ -242,12 +263,10 @@ class GrammarLearning(unittest.TestCase):
             "geese are not supposed to be in the zoo",
         ]
         induced_grammar = grammar_induction.induce_grammar_using_template_trees(
-            dataset,
-            relative_similarity_threshold=0.1,
+            dataset, relative_similarity_threshold=0.1,
         )
         print(induced_grammar)
         print(induced_grammar.generate_all())
-
 
     def test_hello_world_multiple_deep(self):
         # Check if grammar generates same dataset
