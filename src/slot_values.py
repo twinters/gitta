@@ -1,4 +1,3 @@
-from __future__ import annotations
 import pprint
 from functools import reduce
 from typing import (
@@ -345,7 +344,7 @@ class SlotValues(hashabledict):
 
     def _merge_slot_iteration(
         self,
-        slot_values: SlotValues,
+        slot_values: "SlotValues",
         previously_updated: Iterable[TemplateSlot],
         slot_list: List[TemplateSlot],
         slot_indices: Dict[TemplateSlot, int],
