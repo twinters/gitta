@@ -4,6 +4,10 @@ Gitta (*"Grammar Induction using a Template Tree Approach"*) is a method for ind
 It performs particularly well on datasets that have latent templates, e.g. forum topics, writing prompts and output from template-based text generators.
 The found grammars can easily be converted into grammars for use in grammar languages such as [Tracery](https://tracery.io/) & [Babbly](https://github.com/twinters/babbly).
 
+## Demo
+
+A demo for Gitta can be found & executed on [Google Colaboratory](https://colab.research.google.com/drive/1uD2tRUrXBtHm0YYWM7vuDivjacLq7K0G?usp=sharing).
+
 ## Example
 
 ```
