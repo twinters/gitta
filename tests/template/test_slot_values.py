@@ -2,12 +2,12 @@ import random
 import unittest
 from typing import List, Collection, Set, Tuple
 
-from src.slot_name_generator import alphabetic_slot_name_iterator
-from src.slot_values import SlotValues
-from src.template import Template
+from gitta.slot_name_generator import alphabetic_slot_name_iterator
+from gitta.slot_values import SlotValues
+from gitta.template import Template
 
-from src.hashabledict import hashabledict
-from src.template_elements import TemplateString, NamedTemplateSlot, SlotAssignment
+from gitta.hashabledict import hashabledict
+from gitta.template_elements import TemplateString, NamedTemplateSlot, SlotAssignment
 
 
 class SlotValuesTest(unittest.TestCase):

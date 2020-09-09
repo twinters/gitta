@@ -2,9 +2,9 @@ import random
 import unittest
 from typing import List
 
-from src.slot_values import SlotValues
-from src.template import Template
-from src.template_elements import (
+from gitta.slot_values import SlotValues
+from gitta.template import Template
+from gitta.template_elements import (
     TemplateString,
     TemplateSlot,
     NamedTemplateSlot,

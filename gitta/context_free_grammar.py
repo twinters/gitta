@@ -6,11 +6,11 @@ from functools import reduce
 from queue import Queue
 from typing import Dict, Collection, Callable, List, Optional, Set, Iterator, Tuple
 
-from src.hashabledict import hashabledict
-from src.template import Template, default_named_slot_regex
-from src.slot_values import SlotValues
-from src.template_elements import TemplateSlot, NamedTemplateSlot, SlotAssignment
-from src.template_tree import TemplateTree
+from gitta.hashabledict import hashabledict
+from gitta.template import Template, default_named_slot_regex
+from gitta.slot_values import SlotValues
+from gitta.template_elements import TemplateSlot, NamedTemplateSlot, SlotAssignment
+from gitta.template_tree import TemplateTree
 
 default_depth = 100
 

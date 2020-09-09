@@ -4,8 +4,8 @@ from typing import List, Collection, Set, Dict
 
 from nltk import word_tokenize
 
-from src.template import Template
-from src.template_tree import TemplateTree
+from gitta.template import Template
+from gitta.template_tree import TemplateTree
 
 
 # LATTICE

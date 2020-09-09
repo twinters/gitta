@@ -14,9 +14,9 @@ from typing import (
 
 from sortedcontainers import SortedSet
 
-from src.hashabledict import hashabledict
-from src.template_elements import TemplateSlot, SlotAssignment, TemplateElement
-from src.template import Template
+from gitta.hashabledict import hashabledict
+from gitta.template_elements import TemplateSlot, SlotAssignment, TemplateElement
+from gitta.template import Template
 
 
 def has_similar_content(

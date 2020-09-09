@@ -1,12 +1,12 @@
 import random
 import unittest
 
-from src.slot_values import SlotValues
-from src.template import Template
-from src.template_elements import TemplateString, NamedTemplateSlot, SlotAssignment
-from src.template_tree import TemplateTree
-from src.template_tree_learner import visualise_template_tree_history
-from src.template_tree_visualiser import render_tree_string
+from gitta.slot_values import SlotValues
+from gitta.template import Template
+from gitta.template_elements import TemplateString, NamedTemplateSlot, SlotAssignment
+from gitta.template_tree import TemplateTree
+from gitta.template_tree_learner import visualise_template_tree_history
+from gitta.template_tree_visualiser import render_tree_string
 
 
 class TemplateTreeLearner(unittest.TestCase):

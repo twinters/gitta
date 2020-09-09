@@ -1,10 +1,10 @@
 from typing import Collection, Tuple, Optional
 
-from src.context_free_grammar import ContextFreeGrammar
-from src.slot_name_generator import alphabetic_slot_name_iterator
-from src.slot_values import SlotValues
-from src.template_tree import TemplateTree
-from src.template_tree_learner import TemplateLatticeLearner
+from gitta.context_free_grammar import ContextFreeGrammar
+from gitta.slot_name_generator import alphabetic_slot_name_iterator
+from gitta.slot_values import SlotValues
+from gitta.template_tree import TemplateTree
+from gitta.template_tree_learner import TemplateLatticeLearner
 
 
 def induce_grammar_using_template_trees(

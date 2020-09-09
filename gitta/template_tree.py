@@ -1,10 +1,10 @@
 from queue import LifoQueue, Queue
 from typing import List, Tuple, Set, Dict, Collection, Iterator
 
-from src.slot_name_generator import alphabetic_slot_name_iterator
-from src.template import Template
-from src.slot_values import SlotValues
-from src.template_elements import TemplateSlot, NamedTemplateSlot, SlotAssignment
+from gitta.slot_name_generator import alphabetic_slot_name_iterator
+from gitta.template import Template
+from gitta.slot_values import SlotValues
+from gitta.template_elements import TemplateSlot, NamedTemplateSlot, SlotAssignment
 
 
 class TemplateTree:

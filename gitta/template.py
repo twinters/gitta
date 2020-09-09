@@ -17,8 +17,8 @@ from nltk.tokenize import word_tokenize
 from nltk.tokenize.treebank import TreebankWordDetokenizer
 from typing.re import Match
 
-from src.wagnerfischer import WagnerFischer
-from src.template_elements import (
+from gitta.wagnerfischer import WagnerFischer
+from gitta.template_elements import (
     TemplateElement,
     TemplateString,
     TemplateSlot,

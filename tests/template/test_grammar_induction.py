@@ -3,9 +3,9 @@ import unittest
 from typing import List, Collection
 
 
-from src import grammar_induction
-from src.context_free_grammar import ContextFreeGrammar
-from src.template import Template
+from gitta import grammar_induction
+from gitta.context_free_grammar import ContextFreeGrammar
+from gitta.template import Template
 
 import random
 from pathlib import Path

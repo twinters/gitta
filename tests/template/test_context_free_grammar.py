@@ -3,9 +3,9 @@ import re
 import unittest
 from pathlib import Path
 
-from src.context_free_grammar import ContextFreeGrammar, SlotReplacements, _tracery_slot_modifier
-from src.template import Template
-from src.template_elements import NamedTemplateSlot, TemplateString
+from gitta.context_free_grammar import ContextFreeGrammar, SlotReplacements, _tracery_slot_modifier
+from gitta.template import Template
+from gitta.template_elements import NamedTemplateSlot, TemplateString
 
 
 class ContextFreeGrammarTest(unittest.TestCase):

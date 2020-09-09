@@ -1,7 +1,7 @@
 from functools import total_ordering
 from typing import Dict, KeysView, ValuesView
 
-from src.hashabledict import hashabledict
+from gitta.hashabledict import hashabledict
 
 
 class TemplateElement:

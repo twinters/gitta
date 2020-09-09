@@ -2,17 +2,17 @@ import random
 import unittest
 from typing import Collection
 
-from src import template_tree_visualiser
-from src.context_free_grammar import ContextFreeGrammar
-from src.template import Template
-from src.template_tree import TemplateTree
-from src.template_tree_learner import (
+from gitta import template_tree_visualiser
+from gitta.context_free_grammar import ContextFreeGrammar
+from gitta.template import Template
+from gitta.template_tree import TemplateTree
+from gitta.template_tree_learner import (
     TemplateLatticeLearner,
     TemplateTreeLearner,
     LearnerState,
     _to_templates,
 )
-from src.template_tree_visualiser import render_tree_string
+from gitta.template_tree_visualiser import render_tree_string
 
 
 class TemplateTreeLearnerTest(unittest.TestCase):

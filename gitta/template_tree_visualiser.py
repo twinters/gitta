@@ -4,7 +4,7 @@ from typing import Union
 from anytree import Node, RenderTree
 from anytree.exporter import DotExporter
 
-from src.template_tree import TemplateTree
+from gitta.template_tree import TemplateTree
 
 
 def create_tree_node_representation(tree: TemplateTree):

@@ -71,4 +71,4 @@ fabric.properties
 venv/
 .idea/
 
-src/__pycache__/
+gitta/__pycache__/
