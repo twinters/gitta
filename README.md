@@ -2,7 +2,7 @@
 
 [Gitta](https://arxiv.org/abs/2009.04530) (*"Grammar Induction using a Template Tree Approach"*) is a method for inducing context-free grammars.
 It performs particularly well on datasets that have latent templates, e.g. forum topics, writing prompts and output from template-based text generators.
-The found grammars can easily be converted into grammars for use in grammar languages such as [Tracery](https://tracery.io/) & [Babbly](https://github.com/twinters/babbly).
+The found context-free grammars can easily be converted into grammars for use in grammar languages such as [Tracery](https://tracery.io/) & [Babbly](https://github.com/twinters/babbly).
 
 ## Demo
 
