@@ -1,6 +1,6 @@
 # Gitta
 
-Gitta (*"Grammar Induction using a Template Tree Approach"*) is a method for inducing context-free grammars.
+[Gitta](https://arxiv.org/abs/2009.04530) (*"Grammar Induction using a Template Tree Approach"*) is a method for inducing context-free grammars.
 It performs particularly well on datasets that have latent templates, e.g. forum topics, writing prompts and output from template-based text generators.
 The found grammars can easily be converted into grammars for use in grammar languages such as [Tracery](https://tracery.io/) & [Babbly](https://github.com/twinters/babbly).
 
@@ -53,13 +53,14 @@ And as generations:
 
 ## Paper citation
 
-If you would like to refer to this work, or if use this work in an academic context, please consider citing the following paper:
+If you would like to refer to this work, or if use this work in an academic context, please consider citing [the following paper](https://arxiv.org/abs/2009.04530):
 
 ```
 @article{winters2020gitta,
     title={Discovering Textual Structures: Generative Grammar Induction using Template Trees},
     author={Winters, Thomas and De Raedt, Luc},
     journal={Proceedings of the 11th International Conference on Computational Creativity},
+    pages = {177-180},
     year={2020},
     publisher={Association for Computational Creativity}
 }
