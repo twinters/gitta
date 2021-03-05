@@ -94,9 +94,10 @@ Every setting was run 5 times, and the median number of in-language texts (gener
 | [Whinge_Bot](https://twitter.com/Whinge_Bot)  | 450805        | 870  | 3092        | 6           | 80   | 16300       | 748         | 131  | 59210       | 1710        | 222  |
 
 
-## Paper citation
+## Credits & Paper citation
 
-If you would like to refer to this work, or if use this work in an academic context, please consider citing [the following paper](https://arxiv.org/abs/2009.04530):
+If you like this work, consider following me on [Twitter](https://twitter.com/thomas_wint). 
+If use this work in an academic context, please consider citing [the following paper](https://arxiv.org/abs/2009.04530):
 
 ```
 @article{winters2020gitta,
