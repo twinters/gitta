@@ -329,16 +329,17 @@ def _remove_single_element_slot_templates(slot_list, slot_values, updated):
         lambda: set()
     )
     for i, i_key in enumerate(slot_list):
-        i_single_slot_values = {
-            template.get_elements()[0]
-            for template in slot_values[i_key]
-            if template.get_number_of_elements() == 1
-            and template.get_elements()[0].is_slot()
-        }
+        if not slot_values.has_replacement(i_key):
+            i_single_slot_values = {
+                template.get_elements()[0]
+                for template in slot_values[i_key]
+                if template.get_number_of_elements() == 1
+                and template.get_elements()[0].is_slot()
+            }
 
-        # Register that this slot occurs as a single-element-slot-template for slot i
-        for single_slot in i_single_slot_values:
-            single_slot_occurrences[single_slot].add(i_key)
+            # Register that this slot occurs as a single-element-slot-template for slot i
+            for single_slot in i_single_slot_values:
+                single_slot_occurrences[single_slot].add(i_key)
 
     # Now check which ones occur only once, and replace them
     for redundant_slot, slots_mapping_to_slot in single_slot_occurrences.items():
