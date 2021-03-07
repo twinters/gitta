@@ -16,6 +16,7 @@ def induce_grammar_using_template_trees(
     max_recalculation: Optional[int] = None,
     use_best_merge_candidate=True,
     max_depth: Optional[int] = None,
+    allow_empty_string=True,
     log_tree: Callable[[str, TemplateTree], None] = lambda text, tt,: None,
 ):
     # Learn a tree from the given dataset
@@ -23,6 +24,7 @@ def induce_grammar_using_template_trees(
         minimal_variables=minimal_variables,
         words_per_leaf_slot=words_per_slot,
         use_best_merge_candidate=use_best_merge_candidate,
+        allow_empty_string=allow_empty_string,
     ).learn(lines)
     log_tree("1. Learned", learned_tree)
 
@@ -49,7 +51,7 @@ def induce_grammar_using_template_trees(
             simplified_tree = new_tt
             log_tree("5 ("+str(iteration)+"). Recalculated", simplified_tree)
         new_tt = simplified_tree.recalculate_templates(
-            minimal_variables=minimal_variables
+            minimal_variables=minimal_variables, allow_empty_string=allow_empty_string
         )
         derived_slot_values, new_tt = _name_and_simplify_tree(
             new_tt, relative_similarity_threshold
