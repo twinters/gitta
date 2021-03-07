@@ -246,13 +246,13 @@ def _merge_slot_iteration(
     length = len(slot_values.keys())
 
     # Go over all previously updated slots
-    for i_key in previously_updated:
-        i = slot_indices[i_key]
+    for i_slot in previously_updated:
+        i = slot_indices[i_slot]
         i_changed = False
 
         # If this slot is not already getting replaced
-        if i_key not in slot_values.get_replacements().keys():
-            i_vals = set(slot_values[i_key])
+        if i_slot not in slot_values.get_replacements().keys():
+            i_vals = set(slot_values[i_slot])
 
             # Check for all other slots that are ordinally later
             for j in range(i + 1, length):
@@ -260,7 +260,7 @@ def _merge_slot_iteration(
                 j_vals = slot_values[j_key]
 
                 ij_changed, i_vals = _absorb_slot_if_similar(
-                    i_key,
+                    i_slot,
                     i_vals,
                     j_key,
                     j_vals,
@@ -289,7 +289,7 @@ def _merge_slot_iteration(
             )
 
             # Check if i contains itself
-            i_changed, i_vals = _filter_out_self(i_changed, i_key, i_vals)
+            i_changed, i_vals = _filter_out_self(i_changed, i_slot, i_vals)
 
             # Check if i only contains a single value
             if len(i_vals) == 1:
@@ -299,7 +299,7 @@ def _merge_slot_iteration(
                     len(single.get_elements()) == 1
                     and single.get_elements()[0].is_slot()
                 ):
-                    slot_values.add_replacement(i_key, single.get_elements()[0])
+                    slot_values.add_replacement(i_slot, single.get_elements()[0])
                     i_changed = True
                 # Otherwise, just replace all occurrences of this slot with the new values
                 else:
@@ -307,39 +307,38 @@ def _merge_slot_iteration(
                     # new_slot_values.
 
             # Store all newly found i_vals
-            slot_values[i_key] = i_vals
+            slot_values[i_slot] = i_vals
 
         # Replacement exists
         else:
             # Update replacement to purest replacement
             i_changed = i_changed or _update_to_most_specific_replacement(
-                i_key, slot_values
+                i_slot, slot_values
             )
-        if i_changed and i_key not in updated:
-            updated.add(i_key)
+        if i_changed and i_slot not in updated:
+            updated.add(i_slot)
 
     return updated
 
 
-def _remove_single_element_slot_templates(slot_list, slot_values, updated):
+def _remove_single_element_slot_templates(slot_values):
     """ Removes slots that only occurs once, and in a template only containing this slot.
      Example: D -> <E> | "hello" and E -> "hi" | "bonjour" becomes D -> "hello" | "hi" | "bonjour" and marking E as replaced
      """
     single_slot_occurrences: Dict[TemplateSlot, Set[TemplateSlot]] = defaultdict(
         lambda: set()
     )
-    for i, i_key in enumerate(slot_list):
-        if not slot_values.has_replacement(i_key):
-            i_single_slot_values = {
-                template.get_elements()[0]
-                for template in slot_values[i_key]
-                if template.get_number_of_elements() == 1
-                and template.get_elements()[0].is_slot()
-            }
+    for i, i_slot in enumerate(slot_values.get_unreplaced_slots()):
+        i_single_slot_values = {
+            template.get_elements()[0]
+            for template in slot_values[i_slot]
+            if template.get_number_of_elements() == 1
+            and template.get_elements()[0].is_slot()
+        }
 
-            # Register that this slot occurs as a single-element-slot-template for slot i
-            for single_slot in i_single_slot_values:
-                single_slot_occurrences[single_slot].add(i_key)
+        # Register that this slot occurs as a single-element-slot-template for slot i
+        for single_slot in i_single_slot_values:
+            single_slot_occurrences[single_slot].add(i_slot)
 
     # Now check which ones occur only once, and replace them
     for redundant_slot, slots_mapping_to_slot in single_slot_occurrences.items():
@@ -356,7 +355,7 @@ def _remove_single_element_slot_templates(slot_list, slot_values, updated):
             slot_values[containing_slot] = new_i_vals
 
             # Mark as updated & replaced
-            updated.add(containing_slot)
+            # updated.add(containing_slot)
             slot_values.add_replacement(redundant_slot, containing_slot)
 
 
@@ -408,11 +407,11 @@ class SlotValues(hashabledict):
     def get_replacements(self) -> Dict[TemplateSlot, TemplateSlot]:
         return self._replacements
 
-    def has_replacement(self, key: TemplateSlot) -> bool:
-        return key in self._replacements
+    def has_replacement(self, slot: TemplateSlot) -> bool:
+        return slot in self._replacements
 
-    def get_replacement(self, key: TemplateSlot) -> TemplateSlot:
-        return self._replacements[key]
+    def get_replacement(self, slot: TemplateSlot) -> TemplateSlot:
+        return self._replacements[slot]
 
     def get_non_replaced_mappings(self) -> "SlotValues":
         result = SlotValues()
@@ -485,9 +484,13 @@ class SlotValues(hashabledict):
             )
 
         # Check if there are single-element-slot-templates that occur only once
-        _remove_single_element_slot_templates(slot_list, new_slot_values, updated)
+        _remove_single_element_slot_templates(new_slot_values)
 
         return new_slot_values
+
+    # GETTERS
+    def get_unreplaced_slots(self) -> List[TemplateSlot]:
+        return [slot for slot in self.keys() if not self.has_replacement(slot)]
 
     # TYPED DICT OVERRIDES
 
