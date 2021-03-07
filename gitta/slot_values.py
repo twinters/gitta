@@ -371,12 +371,9 @@ class SlotValues(hashabledict):
         updated = SortedSet()
         length = len(slot_values.keys())
 
-        # Go over all slots
-        # TODO: make it only go over updated
-        # for i_key in previously_updated:
-        #     i = slot_indices[i_key]
-        for i in range(len(slot_list)):
-            i_key = slot_list[i]
+        # Go over all previously updated slots
+        for i_key in previously_updated:
+            i = slot_indices[i_key]
             i_changed = False
 
             # If this slot is not already getting replaced
