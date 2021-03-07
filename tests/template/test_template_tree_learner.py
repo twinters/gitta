@@ -205,7 +205,7 @@ class TemplateTreeLearnerTest(unittest.TestCase):
         print(template_tree_visualiser.render_tree_string(template_tree))
         self.assertEqual(expected, template_tree)
 
-    def test_disallow_empty_string(self):
+    def test_disallow_empty_string_simple(self):
         """ Checks whether disallowing empty string in learning works"""
         learner = TemplateLatticeLearner(
             minimal_variables=True, allow_empty_string=False
@@ -213,9 +213,104 @@ class TemplateTreeLearnerTest(unittest.TestCase):
         dataset = ["I am a human", "I am a nice human", "I am a bad human"]
         template_tree = learner.learn(dataset)
 
-        expected_top_template = Template.from_string("I am a [SLOT]")
+        expected = TemplateTree(
+            Template.from_string("I am a [SLOT]"),
+            [
+                TemplateTree(
+                    Template.from_string("I am a [SLOT] human"),
+                    [
+                        TemplateTree(Template.from_string(s))
+                        for s in ["I am a nice human", "I am a bad human"]
+                    ],
+                ),
+                TemplateTree(Template.from_string("I am a human"),),
+            ],
+        )
         print(template_tree_visualiser.render_tree_string(template_tree))
-        self.assertEqual(expected_top_template, template_tree.get_template())
+        self.assertEqual(expected, template_tree)
+
+    def test_disallow_empty_string_simple_2(self):
+        dataset = [
+            "He likes cute cats",
+            "He likes nice cats",
+            "He likes cats",
+            "This is another sentence"
+        ]
+        learner = TemplateLatticeLearner(
+            minimal_variables=True, allow_empty_string=False
+        )
+        template_tree = learner.learn(dataset)
+        expected = TemplateTree(
+            Template.from_string("[SLOT]"),
+            [
+                TemplateTree(
+                    Template.from_string("He likes [SLOT]"),
+                    [
+                        TemplateTree(
+                            Template.from_string("He likes [SLOT] cats"),
+                            [
+                                TemplateTree(Template.from_string(s))
+                                for s in ["He likes cute cats", "He likes nice cats"]
+                            ],
+                        ),
+                        TemplateTree(Template.from_string("He likes cats")),
+                    ],
+                ),
+                TemplateTree(Template.from_string("This is another sentence"))
+            ],
+        )
+        print(template_tree_visualiser.render_tree_string(template_tree))
+        self.assertEqual(expected, template_tree)
+
+    def test_disallow_empty_string_hard(self):
+        dataset = [
+            "I saw her on the quiet hill",
+            "I saw her on the tall hill",
+            "I saw her on the hill",
+            "He likes cute cats",
+            "He likes nice cats",
+            "He likes cats",
+        ]
+        learner = TemplateLatticeLearner(
+            minimal_variables=True, allow_empty_string=False
+        )
+        template_tree = learner.learn(dataset)
+        expected = TemplateTree(
+            Template.from_string("[SLOT]"),
+            [
+                TemplateTree(
+                    Template.from_string("He likes [SLOT]"),
+                    [
+                        TemplateTree(
+                            Template.from_string("He likes [SLOT] cats"),
+                            [
+                                TemplateTree(Template.from_string(s))
+                                for s in ["He likes cute cats", "He likes nice cats"]
+                            ],
+                        ),
+                        TemplateTree(Template.from_string("He likes cats")),
+                    ],
+                ),
+                TemplateTree(
+                    Template.from_string("I saw her on the [SLOT]"),
+                    [
+                        TemplateTree(
+                            Template.from_string("I saw her on the [SLOT] hill"),
+                            [
+                                TemplateTree(Template.from_string(s))
+                                for s in [
+                                    "I saw her on the tall hill",
+                                    "I saw her on the quiet hill",
+                                ]
+                            ],
+                        ),
+                        TemplateTree(Template.from_string("I saw her on the hill")),
+                    ],
+                ),
+            ],
+        )
+        print(template_tree_visualiser.render_tree_string(template_tree))
+        self.assertEqual(expected, template_tree)
 
     def test_learn_hello_world_tree(self):
         learner = TemplateLatticeLearner(minimal_variables=True)
