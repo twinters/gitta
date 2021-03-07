@@ -246,6 +246,13 @@ class Template:
             all_mappings.add(mapping)
         return all_mappings
 
+    def can_map_without_empty_string(self, other: "Template") -> bool:
+        slot_mappings: Set[SlotAssignment] = self.create_slot_mapping_all(other)
+        for slot_mapping in slot_mappings:
+            if not slot_mapping.contains_empty_string_assignment():
+                return True
+        return False
+
     # STATIC CREATORS
     def fill(self, slot_assignments: SlotAssignment) -> "Template":
         new_elements = []

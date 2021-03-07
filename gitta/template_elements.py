@@ -100,6 +100,9 @@ class SlotAssignment(hashabledict):
     def values(self) -> ValuesView["Template"]:
         return super(SlotAssignment, self).values()
 
+    def contains_empty_string_assignment(self):
+        return any(len(v.get_elements()) == 0 for v in self.values())
+
     def __setitem__(self, key: TemplateSlot, value: "Template"):
         super(SlotAssignment, self).__setitem__(key, value)
 
