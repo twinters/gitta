@@ -18,6 +18,8 @@ from gitta.hashabledict import hashabledict
 from gitta.template_elements import TemplateSlot, SlotAssignment, TemplateElement
 from gitta.template import Template
 
+empty_string_template = Template([])
+
 
 def has_similar_content(
     values_set_1: Set["Template"],
@@ -28,17 +30,33 @@ def has_similar_content(
     if relative_similarity_threshold == 1:
         return values_set_1 == values_set_2
 
+    # If both values sets contain the empty string, don't count in overlap!
+    (both_contain_empty, any_contain_empty,) = calculate_empty_string_presence(
+        values_set_1, values_set_2
+    )
+
     # Check if the intersection is larger
     intersection = values_set_1.intersection(values_set_2)
-    intersection_size = len(intersection)
+    intersection_size = len(intersection) - (1 if both_contain_empty else 0)
     union = values_set_1.union(values_set_2)
-    union_size = len(union)
+    union_size = len(union) - (1 if any_contain_empty else 0)
 
     return intersection_size / union_size >= relative_similarity_threshold
 
     # return (intersection_size / val_1_size >= relative_similarity_threshold) or (
     #     intersection_size / val_2_size >= relative_similarity_threshold
     # )
+
+
+def calculate_empty_string_presence(
+    values_set_1: Set["Template"], values_set_2: Set["Template"]
+) -> (bool, bool):
+    """ Calculates whether set_1 and/or set_2 contains empty string, as (both_contains, any_contains) tuple """
+    set_1_empty_string = empty_string_template in values_set_1
+    set_2_empty_string = empty_string_template in values_set_2
+    both_contains = set_1_empty_string and set_2_empty_string
+    any_contains = set_1_empty_string or set_2_empty_string
+    return both_contains, any_contains
 
 
 def _get_all_slots(templates: Collection["Template"]) -> Set[TemplateSlot]:
