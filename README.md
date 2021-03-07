@@ -73,10 +73,31 @@ bananas are not supposed to be in a salad",
 "I like bananas and cats"}
 ```
 
+## Performance
 
-## Paper citation
+We tested out this grammar induction algorithm on Twitterbots using the [Tracery](https://tracery.io/) grammar modelling tool.
+Gitta only saw either 25, 50 or 100 example generations, and had to introduce a grammar that could generate similar texts.
+Every setting was run 5 times, and the median number of in-language texts (generations that were also produced by the original grammar) and not in-language texts (texts that the induced grammar generated, but not the original grammar). The median number of production rules is also included, to show its generalisation performance.
 
-If you would like to refer to this work, or if use this work in an academic context, please consider citing [the following paper](https://arxiv.org/abs/2009.04530):
+|   Grammar       |               |      | 25 examples |             |      | 50 examples |             |      | 100 examples |            |      |
+|:---------------:|---------------|------|:-----------:|-------------|------|:-----------:|-------------|------|-------------|-------------|------|
+| **Name**        | **# generations** | **size** | **in lang** | **not in lang** | **size** | **in lang**     | **not in lang** | **size** | **in lang**     | **not in lang** | **size** |
+| [botdoesnot](https://twitter.com/botdoesnot)  | 380292        | 363  | 648         | 0           | 64   | 2420        | 0           | 115  | 1596        | 4           | 179  |
+| [BotSpill](https://twitter.com/botspill)        | 43452         | 249  | 75          | 0           | 32   | 150         | 0           | 62   | 324         | 0           | 126  |
+| [coldteabot](https://twitter.com/coldteabot)      | 448           | 24   | 39          | 0           | 38   | 149         | 19          | 63   | 388         | 9           | 78   |
+| [hometapingkills](https://twitter.com/hometapingkills) | 4080          | 138  | 440         | 0           | 48   | 1184        | 3240        | 76   | 2536        | 7481        | 106  |
+| [InstallingJava](https://twitter.com/InstallingJava) | 390096        | 95   | 437         | 230         | 72   | 2019        | 1910        | 146  | 1156        | 3399        | 228  |
+| [pumpkinspiceit](https://botwiki.org/bot/pumpkinspiceit/)  | 6781          | 6885 | 25          | 0           | 26   | 50          | 0           | 54   | 100         | 8           | 110  |
+| [SkoolDetention](https://twitter.com/SkoolDetention)  | 224           | 35   | 132         | 0           | 31   | 210         | 29          | 41   | 224         | 29          | 49   |
+| [soundesignquery](https://twitter.com/soundesignquery) | 15360         | 168  | 256         | 179         | 52   | 76          | 2           | 83   | 217         | 94          | 152  |
+| [whatkilledme](https://botwiki.org/bot/whatkilledme/)    | 4192          | 132  | 418         | 0           | 45   | 1178        | 0           | 74   | 2646        | 0           | 108  |
+| [Whinge_Bot](https://twitter.com/Whinge_Bot)  | 450805        | 870  | 3092        | 6           | 80   | 16300       | 748         | 131  | 59210       | 1710        | 222  |
+
+
+## Credits & Paper citation
+
+If you like this work, consider following me on [Twitter](https://twitter.com/thomas_wint). 
+If use this work in an academic context, please consider citing [the following paper](https://arxiv.org/abs/2009.04530):
 
 ```
 @article{winters2020gitta,
