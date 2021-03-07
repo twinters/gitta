@@ -1,4 +1,5 @@
 import pprint
+from collections import defaultdict
 from functools import reduce
 from typing import (
     List,
@@ -320,6 +321,44 @@ def _merge_slot_iteration(
     return updated
 
 
+def _remove_single_element_slot_templates(slot_list, slot_values, updated):
+    """ Removes slots that only occurs once, and in a template only containing this slot.
+     Example: D -> <E> | "hello" and E -> "hi" | "bonjour" becomes D -> "hello" | "hi" | "bonjour" and marking E as replaced
+     """
+    single_slot_occurrences: Dict[TemplateSlot, Set[TemplateSlot]] = defaultdict(
+        lambda: set()
+    )
+    for i, i_key in enumerate(slot_list):
+        i_single_slot_values = {
+            template.get_elements()[0]
+            for template in slot_values[i_key]
+            if template.get_number_of_elements() == 1
+            and template.get_elements()[0].is_slot()
+        }
+
+        # Register that this slot occurs as a single-element-slot-template for slot i
+        for single_slot in i_single_slot_values:
+            single_slot_occurrences[single_slot].add(i_key)
+
+    # Now check which ones occur only once, and replace them
+    for redundant_slot, slots_mapping_to_slot in single_slot_occurrences.items():
+        if len(slots_mapping_to_slot) == 1:
+            redudant_slot_as_template = Template([redundant_slot])
+            redudant_slot_values = slot_values[redundant_slot]
+
+            containing_slot = next(iter(slots_mapping_to_slot))
+
+            i_vals = slot_values[containing_slot]
+            new_i_vals = {
+                val for val in i_vals if val != redudant_slot_as_template
+            }.union(redudant_slot_values)
+            slot_values[containing_slot] = new_i_vals
+
+            # Mark as updated & replaced
+            updated.add(containing_slot)
+            slot_values.add_replacement(redundant_slot, containing_slot)
+
+
 class SlotValues(hashabledict):
     """ Represents possible values a slot can have, assuming independence between slots  """
 
@@ -443,6 +482,9 @@ class SlotValues(hashabledict):
                 slot_indices,
                 relative_similarity_threshold,
             )
+
+        # Check if there are single-element-slot-templates that occur only once
+        _remove_single_element_slot_templates(slot_list, new_slot_values, updated)
 
         return new_slot_values
 
