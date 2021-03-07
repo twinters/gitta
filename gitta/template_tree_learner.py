@@ -24,10 +24,15 @@ class MergeCandidate:
     def get_distance(self) -> int:
         return self._distance
 
-    def get_merged_template(self, minimal_variables: bool = True) -> Template:
+    def get_merged_template(
+        self, minimal_variables: bool = True, allow_empty_string: bool = True
+    ) -> Template:
         if not self._merged:
             self._merged = _merge_templates(
-                self._t1, self._t2, minimal_variables=minimal_variables
+                self._t1,
+                self._t2,
+                minimal_variables=minimal_variables,
+                allow_empty_string=allow_empty_string,
             )
         return self._merged
 
@@ -154,7 +159,7 @@ class LearnerState:
 
 class TemplateTreeLearner:
     @abstractmethod
-    def learn(self, lines: Collection[str]):
+    def learn(self, lines: Collection[str]) -> TemplateTree:
         raise Exception("Not implemented")
 
 
@@ -164,10 +169,12 @@ class TemplateLatticeLearner(TemplateTreeLearner):
         minimal_variables: bool = True,
         words_per_leaf_slot: int = 1,
         use_best_merge_candidate=True,
+        allow_empty_string=True,
     ):
         self._minimal_variables = minimal_variables
         self._use_best_merge_candidate = use_best_merge_candidate
         self._words_per_slot = words_per_leaf_slot
+        self._allow_empty_string = allow_empty_string
 
     def _is_allowed_distance_from_min_for_leaf_slot(self, min_distance, other_distance):
         return other_distance <= min_distance + self._words_per_slot - 1
@@ -355,7 +362,10 @@ class TemplateLatticeLearner(TemplateTreeLearner):
 
         merged_templates = set(
             Template.merge_templates_wagner_fischer(
-                t1, t2, minimal_variables=self._minimal_variables
+                t1,
+                t2,
+                minimal_variables=self._minimal_variables,
+                allow_empty_string=self._allow_empty_string,
             )
         )
         merge_candidates = []
@@ -372,7 +382,7 @@ class TemplateLatticeLearner(TemplateTreeLearner):
         min_slots = min(t1.get_number_of_slots(), t2.get_number_of_slots())
         merged_template = next(
             Template.merge_templates_wagner_fischer(
-                t1, t2, minimal_variables=self._minimal_variables
+                t1, t2, minimal_variables=self._minimal_variables, allow_empty_string=self._allow_empty_string
             )
         )
         return MergeCandidate(
@@ -384,7 +394,10 @@ class TemplateLatticeLearner(TemplateTreeLearner):
     ) -> List[Template]:
         """ Merges all mergeables to new trees """
         return [
-            candidate.get_merged_template(minimal_variables=self._minimal_variables)
+            candidate.get_merged_template(
+                minimal_variables=self._minimal_variables,
+                allow_empty_string=self._allow_empty_string,
+            )
             for candidate in merge_candidates
         ]
 
@@ -466,10 +479,15 @@ def _merge_template_trees(
     return new_template_tree
 
 
-def _merge_templates(t1: Template, t2: Template, minimal_variables: bool) -> Template:
+def _merge_templates(
+    t1: Template, t2: Template, minimal_variables: bool, allow_empty_string=True
+) -> Template:
     return next(
         Template.merge_templates_wagner_fischer(
-            t1, t2, minimal_variables=minimal_variables
+            t1,
+            t2,
+            minimal_variables=minimal_variables,
+            allow_empty_string=allow_empty_string,
         )
     )
 

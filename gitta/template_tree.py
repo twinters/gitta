@@ -388,13 +388,16 @@ class TemplateTree:
 
         return result
 
-    def recalculate_templates(self, minimal_variables=True):
-        return self._recalculate_templates(dict(), minimal_variables)
+    def recalculate_templates(self, minimal_variables=True, allow_empty_string=True):
+        return self._recalculate_templates(
+            dict(), minimal_variables, allow_empty_string=allow_empty_string
+        )
 
     def _recalculate_templates(
         self,
         recalculate_cache: Dict["TemplateTree", "TemplateTree"],
         minimal_variables: bool,
+        allow_empty_string: bool = True,
     ) -> "TemplateTree":
         # Check if already recalculated
         if self in recalculate_cache:
@@ -402,7 +405,11 @@ class TemplateTree:
 
         # Map all children
         mapped_children = [
-            child._recalculate_templates(recalculate_cache, minimal_variables)
+            child._recalculate_templates(
+                recalculate_cache,
+                minimal_variables,
+                allow_empty_string=allow_empty_string,
+            )
             for child in self._children
         ]
         new_template = (
@@ -410,6 +417,7 @@ class TemplateTree:
                 [c.get_template() for c in mapped_children],
                 minimal_variables,
                 self.get_template(),
+                allow_empty_string=allow_empty_string,
             )
             if len(mapped_children) > 0
             else self._template

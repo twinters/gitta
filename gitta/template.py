@@ -402,6 +402,7 @@ class Template:
         templates: List["Template"],
         minimal_variables: bool = True,
         default: "Template" = None,
+        allow_empty_string=True,
     ) -> "Template":
         """
         Merges all templates into a single template that generalises all.
@@ -424,6 +425,7 @@ class Template:
                         current_template,
                         templates[i],
                         minimal_variables=minimal_variables,
+                        allow_empty_string=allow_empty_string,
                         min_non_slot_elements=default_non_slot_elements,
                     )
                 )
