@@ -2,13 +2,18 @@ import random
 import unittest
 from typing import List, Collection
 
-
+import template_tree_visualiser
 from gitta import grammar_induction
 from gitta.context_free_grammar import ContextFreeGrammar
 from gitta.template import Template
+from gitta.template_tree_visualiser import render_tree_string
 
 import random
 from pathlib import Path
+
+
+def log_tree(text, template_tree):
+    print(text, render_tree_string(template_tree), sep="\n")
 
 
 class GrammarLearning(unittest.TestCase):
@@ -432,6 +437,56 @@ class GrammarLearning(unittest.TestCase):
         )
         induced_grammar = grammar_induction.induce_grammar_using_template_trees(
             dataset, words_per_slot=1, relative_similarity_threshold=0.1,
+        )
+        print(induced_grammar)
+        self.assertTrue(expected_grammar.is_isomorphic_with(induced_grammar))
+
+    def test_prohibit_empty_string_simple(self):
+        dataset = [
+            "I saw her on the quiet hill",
+            "I saw her on the tall hill",
+            "I saw her on the hill",
+        ]
+        expected_grammar = ContextFreeGrammar.from_string(
+            {
+                "origin": ["I saw her on the <hill>"],
+                "hill": ["hill", "<hill_adj> hill"],
+                "hill_adj": ["quiet", "tall"],
+            }
+        )
+        induced_grammar = grammar_induction.induce_grammar_using_template_trees(
+            dataset,
+            words_per_slot=1,
+            relative_similarity_threshold=0.1,
+            allow_empty_string=False,
+        )
+        print(induced_grammar)
+        self.assertTrue(expected_grammar.is_isomorphic_with(induced_grammar))
+
+    def test_prohibit_empty_string(self):
+        dataset = [
+            "I saw her on the quiet hill",
+            "I saw her on the tall hill",
+            "I saw her on the hill",
+            "He likes cute cats",
+            "He likes nice cats",
+            "He likes cats",
+        ]
+        expected_grammar = ContextFreeGrammar.from_string(
+            {
+                "origin": ["I saw her on the <hill>", "He likes <cats>"],
+                "hill": ["hill", "<hill_adj> hill"],
+                "hill_adj": ["quiet", "tall"],
+                "cats": ["cats", "<cat_adj> cats"],
+                "cat_adj": ["nice", "cute"],
+            }
+        )
+        induced_grammar = grammar_induction.induce_grammar_using_template_trees(
+            dataset,
+            words_per_slot=1,
+            relative_similarity_threshold=0.1,
+            allow_empty_string=False,
+            log_tree=log_tree,
         )
         print(induced_grammar)
         self.assertTrue(expected_grammar.is_isomorphic_with(induced_grammar))
