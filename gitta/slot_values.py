@@ -234,6 +234,92 @@ def _replace_all_replacable_slots(changed, i_vals, slot_values):
     return changed, i_vals
 
 
+def _merge_slot_iteration(
+    slot_values: "SlotValues",
+    previously_updated: Iterable[TemplateSlot],
+    slot_list: List[TemplateSlot],
+    slot_indices: Dict[TemplateSlot, int],
+    relative_similarity_threshold: float,
+):
+    updated = SortedSet()
+    length = len(slot_values.keys())
+
+    # Go over all previously updated slots
+    for i_key in previously_updated:
+        i = slot_indices[i_key]
+        i_changed = False
+
+        # If this slot is not already getting replaced
+        if i_key not in slot_values.get_replacements().keys():
+            i_vals = set(slot_values[i_key])
+
+            # Check for all other slots that are ordinally later
+            for j in range(i + 1, length):
+                j_key = slot_list[j]
+                j_vals = slot_values[j_key]
+
+                ij_changed, i_vals = _absorb_slot_if_similar(
+                    i_key,
+                    i_vals,
+                    j_key,
+                    j_vals,
+                    slot_values,
+                    relative_similarity_threshold,
+                )
+
+                if ij_changed and j_key not in updated:
+                    updated.add(j_key)
+
+                i_changed = i_changed or ij_changed
+
+            # Check if i values contain the j slot on itself (thus being a superset of j)
+            i_changed, i_vals = _remove_values_if_containg_slot_already_maps(
+                i_changed, i, i_vals, slot_indices, slot_values
+            )
+
+            # Check if some slots it refers to are contained by the content of all other slots
+            i_changed, i_vals = _remove_unnecessary_slot_references(
+                i_changed, i_vals, slot_values
+            )
+
+            # Check if i has replacable slots: rename these template slots to the new ones
+            i_changed, i_vals = _replace_all_replacable_slots(
+                i_changed, i_vals, slot_values
+            )
+
+            # Check if i contains itself
+            i_changed, i_vals = _filter_out_self(i_changed, i_key, i_vals)
+
+            # Check if i only contains a single value
+            if len(i_vals) == 1:
+                single = next(iter(i_vals))
+                # Check if the value it maps to is a pure slot, and if so, mark as replaced
+                if (
+                    len(single.get_elements()) == 1
+                    and single.get_elements()[0].is_slot()
+                ):
+                    slot_values.add_replacement(i_key, single.get_elements()[0])
+                    i_changed = True
+                # Otherwise, just replace all occurrences of this slot with the new values
+                else:
+                    pass  # TODO: add slot removal
+                    # new_slot_values.
+
+            # Store all newly found i_vals
+            slot_values[i_key] = i_vals
+
+        # Replacement exists
+        else:
+            # Update replacement to purest replacement
+            i_changed = i_changed or _update_to_most_specific_replacement(
+                i_key, slot_values
+            )
+        if i_changed and i_key not in updated:
+            updated.add(i_key)
+
+    return updated
+
+
 class SlotValues(hashabledict):
     """ Represents possible values a slot can have, assuming independence between slots  """
 
@@ -350,7 +436,7 @@ class SlotValues(hashabledict):
         updated = SortedSet(self.keys())
 
         while len(updated) > 0:
-            updated = self._merge_slot_iteration(
+            updated = _merge_slot_iteration(
                 new_slot_values,
                 updated,
                 slot_list,
@@ -359,92 +445,6 @@ class SlotValues(hashabledict):
             )
 
         return new_slot_values
-
-    def _merge_slot_iteration(
-        self,
-        slot_values: "SlotValues",
-        previously_updated: Iterable[TemplateSlot],
-        slot_list: List[TemplateSlot],
-        slot_indices: Dict[TemplateSlot, int],
-        relative_similarity_threshold: float,
-    ):
-        updated = SortedSet()
-        length = len(slot_values.keys())
-
-        # Go over all previously updated slots
-        for i_key in previously_updated:
-            i = slot_indices[i_key]
-            i_changed = False
-
-            # If this slot is not already getting replaced
-            if i_key not in slot_values.get_replacements().keys():
-                i_vals = set(slot_values[i_key])
-
-                # Check for all other slots that are ordinally later
-                for j in range(i + 1, length):
-                    j_key = slot_list[j]
-                    j_vals = slot_values[j_key]
-
-                    ij_changed, i_vals = _absorb_slot_if_similar(
-                        i_key,
-                        i_vals,
-                        j_key,
-                        j_vals,
-                        slot_values,
-                        relative_similarity_threshold,
-                    )
-
-                    if ij_changed and j_key not in updated:
-                        updated.add(j_key)
-
-                    i_changed = i_changed or ij_changed
-
-                # Check if i values contain the j slot on itself (thus being a superset of j)
-                i_changed, i_vals = _remove_values_if_containg_slot_already_maps(
-                    i_changed, i, i_vals, slot_indices, slot_values
-                )
-
-                # Check if some slots it refers to are contained by the content of all other slots
-                i_changed, i_vals = _remove_unnecessary_slot_references(
-                    i_changed, i_vals, slot_values
-                )
-
-                # Check if i has replacable slots: rename these template slots to the new ones
-                i_changed, i_vals = _replace_all_replacable_slots(
-                    i_changed, i_vals, slot_values
-                )
-
-                # Check if i contains itself
-                i_changed, i_vals = _filter_out_self(i_changed, i_key, i_vals)
-
-                # Check if i only contains a single value
-                if len(i_vals) == 1:
-                    single = next(iter(i_vals))
-                    # Check if the value it maps to is a pure slot, and if so, mark as replaced
-                    if (
-                        len(single.get_elements()) == 1
-                        and single.get_elements()[0].is_slot()
-                    ):
-                        slot_values.add_replacement(i_key, single.get_elements()[0])
-                        i_changed = True
-                    # Otherwise, just replace all occurrences of this slot with the new values
-                    else:
-                        pass  # TODO: add slot removal
-                        # new_slot_values.
-
-                # Store all newly found i_vals
-                slot_values[i_key] = i_vals
-
-            # Replacement exists
-            else:
-                # Update replacement to purest replacement
-                i_changed = i_changed or _update_to_most_specific_replacement(
-                    i_key, slot_values
-                )
-            if i_changed and i_key not in updated:
-                updated.add(i_key)
-
-        return updated
 
     # TYPED DICT OVERRIDES
 
