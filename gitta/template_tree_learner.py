@@ -68,10 +68,15 @@ class LearnerState:
         self._built_trees: Dict[Template, TemplateTree] = dict()
 
     def add_merge_candidate(
-        self, merge_candidate: MergeCandidate, minimal_variables: bool
+        self,
+        merge_candidate: MergeCandidate,
+        minimal_variables: bool,
+        allow_empty_string: bool = True,
     ):
         self.add_parent(
-            merge_candidate.get_merged_template(minimal_variables),
+            merge_candidate.get_merged_template(
+                minimal_variables, allow_empty_string=allow_empty_string
+            ),
             merge_candidate.get_templates(),
         )
 
@@ -224,7 +229,9 @@ class TemplateLatticeLearner(TemplateTreeLearner):
             for merge_candidate in current_mergeables:
                 # Add new merges
                 learner_state.add_merge_candidate(
-                    merge_candidate, minimal_variables=self._minimal_variables
+                    merge_candidate,
+                    minimal_variables=self._minimal_variables,
+                    allow_empty_string=self._allow_empty_string,
                 )
 
             # Merge all trees with the same top distance
@@ -382,7 +389,10 @@ class TemplateLatticeLearner(TemplateTreeLearner):
         min_slots = min(t1.get_number_of_slots(), t2.get_number_of_slots())
         merged_template = next(
             Template.merge_templates_wagner_fischer(
-                t1, t2, minimal_variables=self._minimal_variables, allow_empty_string=self._allow_empty_string
+                t1,
+                t2,
+                minimal_variables=self._minimal_variables,
+                allow_empty_string=self._allow_empty_string,
             )
         )
         return MergeCandidate(
