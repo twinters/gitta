@@ -357,10 +357,12 @@ class Template:
         minimal_variables: bool = True,
         allow_longer_template=False,
         min_non_slot_elements=None,
+        allow_empty_string=True,
     ) -> Iterator["Template"]:
         distances_table = WagnerFischer(template1._elements, template2._elements)
 
         def is_valid_merge(t: Template) -> bool:
+            # Check length
             return allow_longer_template or (
                 t.length() <= template1.length() or t.length() <= template2.length()
             )
@@ -374,6 +376,7 @@ class Template:
                         alignment,
                         minimal_variables=minimal_variables,
                         merge_named_slots=True,
+                        allow_empty_string=allow_empty_string,
                     )
                 )
                 for alignment in distances_table.alignments()
@@ -584,9 +587,12 @@ def convert_template_elements_from_wagner_fischer(
     alignment: List[str],
     minimal_variables=True,
     merge_named_slots=False,
+    allow_empty_string=True,
 ) -> List[TemplateElement]:
     resulting_elements = []
     elements_index = 0
+
+    has_dangling_empty_slot = False
 
     for operation in alignment:
         if operation == "M":  # KEEP
@@ -603,18 +609,24 @@ def convert_template_elements_from_wagner_fischer(
                     and elements[len(elements) - 1].is_named()
                 ):
                     resulting_elements.pop()
-                resulting_elements.append(new_element)
+
+                if allow_empty_string or not has_dangling_empty_slot:
+                    resulting_elements.append(new_element)
+                has_dangling_empty_slot = False
             elements_index += 1
         elif operation == "S":  # SUBSTITUTE -> add slot
             if not minimal_variables or not _has_ending_slot(resulting_elements, False):
                 resulting_elements.append(TemplateSlot())
+            has_dangling_empty_slot = False
             elements_index += 1
         elif operation == "D":  # DELETE -> skip element
             if not _has_ending_slot(resulting_elements, False):
                 resulting_elements.append(TemplateSlot())
+                has_dangling_empty_slot = True
             elements_index += 1
         elif operation == "I":  # INSERT -> add slot & stay
             if not _has_ending_slot(resulting_elements, False):
                 resulting_elements.append(TemplateSlot())
+                has_dangling_empty_slot = True
 
     return resulting_elements
