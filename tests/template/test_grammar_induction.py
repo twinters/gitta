@@ -177,7 +177,7 @@ class GrammarLearning(unittest.TestCase):
                 {"origin": ["<a> <a>"], "a": ["1", "2", "3"],}
             ),
             words_per_slot=1,
-            minimal_variables=True,
+            minimal_variables=False,
         )
         print(grammar)
 
