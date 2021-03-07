@@ -155,6 +155,71 @@ class TemplateTest(unittest.TestCase):
             "a [SLOT] e", calculate_merged_string("a b c [SLOT] e", "a d [SLOT] e")
         )
 
+    def test_merge_prohibit_empty_string(self):
+        self.assertEqual(
+            "a b [SLOT]",
+            calculate_merged_string(
+                "a b c d", "a b d",
+                allow_empty_string=False
+            ),
+        )
+        self.assertEqual(
+            "a b [SLOT]",
+            calculate_merged_string(
+                "a b d", "a b c d",
+                allow_empty_string=False
+            ),
+        )
+        self.assertEqual(
+            "[SLOT] c d",
+            calculate_merged_string(
+                "a b c d", "b c d",
+                allow_empty_string=False
+            ),
+        )
+        self.assertEqual(
+            "[SLOT] c d",
+            calculate_merged_string(
+                "b c d", "a b c d",
+                allow_empty_string=False
+            ),
+        )
+        self.assertEqual(
+            "a [SLOT] d",
+            calculate_merged_string(
+                "a b c d", "a c d",
+                allow_empty_string=False
+            ),
+        )
+        self.assertEqual(
+            "a [SLOT] d",
+            calculate_merged_string(
+                "a c d", "a b c d",
+                allow_empty_string=False
+            ),
+        )
+        self.assertEqual(
+            "[SLOT] c d",
+            calculate_merged_string(
+                "b c d", "a b c d",
+                allow_empty_string=False
+            ),
+        )
+        self.assertEqual(
+            "[SLOT] c d",
+            calculate_merged_string(
+                "a b c d", "b c d",
+                allow_empty_string=False
+            ),
+        )
+        self.assertEqual(
+            "a [SLOT] c [SLOT]",
+            calculate_merged_string(
+                "a b c [SLOT] e", "a d c e",
+                allow_empty_string=False
+            ),
+        )
+
     def test_merge_exists(self):
         self.assertTrue(
             calculate_merged_string("a [SLOT]", "[SLOT] a")
@@ -448,11 +513,12 @@ def _to_templates(strings: List[str]):
     return tuple([Template.from_string(s) for s in strings])
 
 
-def calculate_merged_string(string1, string2):
+def calculate_merged_string(string1, string2, allow_empty_string=True):
     merged_templates = Template.merge_templates_wagner_fischer(
         Template.from_string(string1, slot_token="[SLOT]"),
         Template.from_string(string2, slot_token="[SLOT]"),
         allow_longer_template=False,
+        allow_empty_string=allow_empty_string,
     )
     return next(merged_templates).to_flat_string(detokenizer=lambda x: " ".join(x))
 
