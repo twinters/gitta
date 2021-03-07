@@ -1,4 +1,4 @@
-from typing import Collection, Tuple, Optional
+from typing import Collection, Tuple, Optional, Callable, Any
 
 from gitta.context_free_grammar import ContextFreeGrammar
 from gitta.slot_name_generator import alphabetic_slot_name_iterator
@@ -16,6 +16,7 @@ def induce_grammar_using_template_trees(
     max_recalculation: Optional[int] = None,
     use_best_merge_candidate=True,
     max_depth: Optional[int] = None,
+    log_tree: Callable[[str, TemplateTree], None] = lambda text, tt,: None,
 ):
     # Learn a tree from the given dataset
     learned_tree = TemplateLatticeLearner(
@@ -23,16 +24,20 @@ def induce_grammar_using_template_trees(
         words_per_leaf_slot=words_per_slot,
         use_best_merge_candidate=use_best_merge_candidate,
     ).learn(lines)
+    log_tree("1. Learned", learned_tree)
 
     # Prune all redundant children: if all other children of parent cover it, the child is not necessary.
     if prune_redundant:
         learned_tree = learned_tree.prune_redundant_abstractions()
+        log_tree("2. Pruned", learned_tree)
 
     derived_slot_values, simplified_tree = _name_and_simplify_tree(
         learned_tree, relative_similarity_threshold
     )
+    log_tree("3. Simplified", learned_tree)
 
     simplified_tree = simplified_tree.collapse_using_slot_values(derived_slot_values)
+    log_tree("4. Collapsed simplified", learned_tree)
 
     # Keep recalculating the tree until convergence
     new_tt = None
@@ -42,6 +47,7 @@ def induce_grammar_using_template_trees(
     ):
         if new_tt is not None:
             simplified_tree = new_tt
+            log_tree("5 ("+str(iteration)+"). Recalculated", simplified_tree)
         new_tt = simplified_tree.recalculate_templates(
             minimal_variables=minimal_variables
         )
@@ -52,10 +58,12 @@ def induce_grammar_using_template_trees(
 
     # Collapse final tree using the last slot values
     collapsed_tt = simplified_tree.collapse_using_slot_values(derived_slot_values)
+    log_tree("6. Collapsed final", collapsed_tt)
 
     # Limit max depth
     if max_depth is not None:
         collapsed_tt = collapsed_tt.reduce_depth(max_depth)
+        log_tree("7. Reduced depth", collapsed_tt)
 
     # Derive final slot values
     final_slot_values = collapsed_tt.get_slot_values()
