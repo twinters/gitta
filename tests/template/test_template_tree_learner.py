@@ -205,6 +205,18 @@ class TemplateTreeLearnerTest(unittest.TestCase):
         print(template_tree_visualiser.render_tree_string(template_tree))
         self.assertEqual(expected, template_tree)
 
+    def test_disallow_empty_string(self):
+        """ Checks whether disallowing empty string in learning works"""
+        learner = TemplateLatticeLearner(
+            minimal_variables=True, allow_empty_string=False
+        )
+        dataset = ["I am a human", "I am a nice human", "I am a bad human"]
+        template_tree = learner.learn(dataset)
+
+        expected_top_template = Template.from_string("I am a [SLOT]")
+        print(template_tree_visualiser.render_tree_string(template_tree))
+        self.assertEqual(expected_top_template, template_tree.get_template())
+
     def test_learn_hello_world_tree(self):
         learner = TemplateLatticeLearner(minimal_variables=True)
         dataset = list(self.hello_world_small.generate_all_string())
