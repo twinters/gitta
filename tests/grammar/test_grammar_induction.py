@@ -413,6 +413,28 @@ class GrammarLearning(unittest.TestCase):
             {t.to_flat_string() for t in grammar.get_content_for(word_list_nt)},
         )
 
+    def test_not_joining_empty_string(self):
+        dataset = [
+            "I saw him on the quiet hill",
+            "I saw her on the tall hill",
+            "I saw her on the hill",
+            "He likes cute cats",
+            "He likes nice cats",
+            "He likes cats",
+        ]
+        expected_grammar = ContextFreeGrammar.from_string(
+            {
+                "origin": ["I saw <him> on the <adj> hill", "He likes <adj2> cats"],
+                "adj": ["", "quiet"],
+                "adj2": ["", "nice", "cute"],
+            }
+        )
+        induced_grammar = grammar_induction.induce_grammar_using_template_trees(
+            dataset, words_per_slot=1, relative_similarity_threshold=0.1,
+        )
+        print(induced_grammar)
+        self.assertTrue(expected_grammar.is_isomorphic_with(induced_grammar))
+
     def test_botdoesnot_crash(self):
         dataset = [
             "One does not easily lead into Qumar",
