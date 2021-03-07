@@ -425,7 +425,8 @@ class GrammarLearning(unittest.TestCase):
         expected_grammar = ContextFreeGrammar.from_string(
             {
                 "origin": ["I saw <him> on the <adj> hill", "He likes <adj2> cats"],
-                "adj": ["", "quiet"],
+                "him": ["her", "him"],
+                "adj": ["", "quiet", "tall"],
                 "adj2": ["", "nice", "cute"],
             }
         )
