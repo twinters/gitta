@@ -3,7 +3,11 @@ import re
 import unittest
 from pathlib import Path
 
-from gitta.context_free_grammar import ContextFreeGrammar, SlotReplacements, _tracery_slot_modifier
+from gitta.context_free_grammar import (
+    ContextFreeGrammar,
+    SlotReplacements,
+    _tracery_slot_modifier,
+)
 from gitta.template import Template
 from gitta.template_elements import NamedTemplateSlot, TemplateString
 
@@ -368,13 +372,21 @@ class ContextFreeGrammarTest(unittest.TestCase):
         self.assertFalse(gram1.is_isomorphic_with(self.hello_world))
         self.assertFalse(gram2.is_isomorphic_with(self.hello_world))
 
-
     def test_modifier_removal_small(self):
-        print(re.match(_tracery_slot_modifier, "#a.a#"))
-        self.assertEqual("#a#", ContextFreeGrammar.replace_modifier_variables("#a.bla#"))
-        self.assertEqual("#a#", ContextFreeGrammar.replace_modifier_variables("#a.title#"))
-        self.assertEqual("#b#", ContextFreeGrammar.replace_modifier_variables("#b.title#"))
-        self.assertEqual("#blabla#", ContextFreeGrammar.replace_modifier_variables("#blabla.title#"))
+        # print(re.match(_tracery_slot_modifier, "#a.a#"))
+        self.assertEqual(
+            "#a#", ContextFreeGrammar.replace_modifier_variables("#a.bla#")
+        )
+        self.assertEqual(
+            "#a#", ContextFreeGrammar.replace_modifier_variables("#a.title#")
+        )
+        self.assertEqual(
+            "#b#", ContextFreeGrammar.replace_modifier_variables("#b.title#")
+        )
+        self.assertEqual(
+            "#blabla#", ContextFreeGrammar.replace_modifier_variables("#blabla.title#")
+        )
+
 
 def get_tracery_folder() -> Path:
     return Path(__file__).parent / ".." / ".." / "data" / "raw" / "tracery"

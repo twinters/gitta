@@ -156,7 +156,10 @@ class TemplateTest(unittest.TestCase):
         )
 
     def test_merge_exists(self):
-        self.assertTrue(calculate_merged_string("a [SLOT]", "[SLOT] a") in {"[SLOT]", "[SLOT] [SLOT]"})
+        self.assertTrue(
+            calculate_merged_string("a [SLOT]", "[SLOT] a")
+            in {"[SLOT]", "[SLOT] [SLOT]"}
+        )
 
     def test_merge_named_slots(self):
         # self.assertEqual(
@@ -449,7 +452,7 @@ def calculate_merged_string(string1, string2):
     merged_templates = Template.merge_templates_wagner_fischer(
         Template.from_string(string1, slot_token="[SLOT]"),
         Template.from_string(string2, slot_token="[SLOT]"),
-        allow_longer_template=False
+        allow_longer_template=False,
     )
     return next(merged_templates).to_flat_string(detokenizer=lambda x: " ".join(x))
 
