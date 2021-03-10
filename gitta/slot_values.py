@@ -303,8 +303,9 @@ def _merge_slot_iteration(
                     i_changed = True
                 # Otherwise, just replace all occurrences of this slot with the new values
                 else:
+                    # The slot only maps to a single piece of content.
+                    # Ideally, it would be removed, but this case does not occur naturally
                     pass  # TODO: add slot removal
-                    # new_slot_values.
 
             # Store all newly found i_vals
             slot_values[i_slot] = i_vals
