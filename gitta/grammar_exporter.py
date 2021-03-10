@@ -18,10 +18,13 @@ def hashtag_slot_mapper(slot: TemplateSlot):
 
 def convert_template(
     template: Template,
-    slot_mapper=triangle_slot_mapper,
+    slot_mapper: Callable[[TemplateSlot], str] = triangle_slot_mapper,
     detokenizer: Callable[[List[str]], str] = TreebankWordDetokenizer().detokenize,
 ):
-    elements = [str(el) for el in template.get_elements()]
+    elements = [
+        str(el) if not el.is_slot() and not el.is_named() else slot_mapper(el)
+        for el in template.get_elements()
+    ]
     return detokenizer(elements)
 
 
