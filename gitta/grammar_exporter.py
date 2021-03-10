@@ -48,6 +48,8 @@ def to_arrow_notation(grammar: ContextFreeGrammar):
     converted = _to_json(grammar, slot_mapper=triangle_slot_mapper)
     lines = []
     for slot in converted:
-        lines.append(slot.get_name() + " -> " + " | ".join(converted[slot]))
+        # TODO: Implement Grammar slot renamer so this can be cleaner
+        slot_name = (slot if slot != "S" else "S'") if slot != "origin" else "S"
+        lines.append(slot_name + " -> " + " | ".join(converted[slot]))
 
     return "\n".join(lines)
