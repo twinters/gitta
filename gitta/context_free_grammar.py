@@ -169,7 +169,7 @@ class ContextFreeGrammar:
         if max_depth <= 0:
             return slot
 
-        possibilities: List[Template] = list(self._grammar[slot])
+        possibilities: Tuple[Template] = tuple(self._grammar[slot])
         chosen: Template = random.choice(possibilities)
 
         slots_to_fill = chosen.get_slots()
