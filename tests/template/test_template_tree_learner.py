@@ -426,10 +426,10 @@ class TemplateTreeLearnerTest(unittest.TestCase):
 
     def test_min_empty_sequence_disallow_empty(self):
         learner = TemplateLatticeLearner(
-            minimal_variables=True, words_per_leaf_slot=1, allow_empty_string=False
+            minimal_variables=True, allow_empty_string=False
         )
-        template_1 = Template.from_string("d e g")
-        template_2 = Template.from_string("c d e")
+        template_1 = Template.from_string("a b c")
+        template_2 = Template.from_string("b c d")
         merge = learner._get_best_merge_candidate(template_1, template_2)
 
         self.assertEqual(
@@ -438,15 +438,15 @@ class TemplateTreeLearnerTest(unittest.TestCase):
 
     def test_min_empty_sequence(self):
         learner = TemplateLatticeLearner(
-            minimal_variables=True, words_per_leaf_slot=1, allow_empty_string=True
+            minimal_variables=True, allow_empty_string=True
         )
-        template_1 = Template.from_string("d e g")
-        template_2 = Template.from_string("c d e")
+        template_1 = Template.from_string("a b c")
+        template_2 = Template.from_string("b c d")
 
         merge = learner._get_best_merge_candidate(template_1, template_2)
 
         self.assertEqual(
-            Template.from_string("[SLOT] d e [SLOT]"), merge.get_merged_template()
+            Template.from_string("[SLOT] b c [SLOT]"), merge.get_merged_template()
         )
 
     def test_min_empty_sequence_longer(self):
