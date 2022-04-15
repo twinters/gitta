@@ -234,7 +234,7 @@ class TemplateTreeLearnerTest(unittest.TestCase):
             "He likes cute cats",
             "He likes nice cats",
             "He likes cats",
-            "This is another sentence"
+            "This is another sentence",
         ]
         learner = TemplateLatticeLearner(
             minimal_variables=True, allow_empty_string=False
@@ -256,7 +256,7 @@ class TemplateTreeLearnerTest(unittest.TestCase):
                         TemplateTree(Template.from_string("He likes cats")),
                     ],
                 ),
-                TemplateTree(Template.from_string("This is another sentence"))
+                TemplateTree(Template.from_string("This is another sentence")),
             ],
         )
         print(template_tree_visualiser.render_tree_string(template_tree))
