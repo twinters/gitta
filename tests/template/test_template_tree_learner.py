@@ -424,6 +424,12 @@ class TemplateTreeLearnerTest(unittest.TestCase):
             4, merge_1_2.get_distance(),
         )
 
+    def test_min_empty_sequence(self):
+        learner = TemplateLatticeLearner(minimal_variables=True, words_per_leaf_slot=2, allow_empty_string=True)
+        template_1 = Template.from_string("who sang i want to be with you everywhere")
+        template_2 = Template.from_string("who sang i only want to be with you")
+
+        learner._get_best_merge_candidate(template_1, template_2)
 
 if __name__ == "__main__":
     unittest.main()
