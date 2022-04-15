@@ -517,7 +517,7 @@ def calculate_merged_string(string1, string2, allow_empty_string=True):
     merged_templates = Template.merge_templates_wagner_fischer(
         Template.from_string(string1, slot_token="[SLOT]"),
         Template.from_string(string2, slot_token="[SLOT]"),
-        allow_longer_template=False,
+        # allow_longer_template=False,
         allow_empty_string=allow_empty_string,
     )
     return next(merged_templates).to_flat_string(detokenizer=lambda x: " ".join(x))
