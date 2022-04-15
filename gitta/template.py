@@ -596,7 +596,11 @@ def convert_template_elements_from_wagner_fischer(
     resulting_elements = []
     elements_index = 0
 
+    # Keep track if last was empty, as to merge slots if minimal_variables=True
     has_dangling_empty_slot = False
+
+    # Check if last was a delete
+    last_was_new_delete_slot = False
 
     for operation in alignment:
         if operation == "M":  # KEEP
@@ -614,23 +618,29 @@ def convert_template_elements_from_wagner_fischer(
                 ):
                     resulting_elements.pop()
 
-                if allow_empty_string or not has_dangling_empty_slot:
+                if allow_empty_string or (
+                    not has_dangling_empty_slot and not last_was_new_delete_slot
+                ):
                     resulting_elements.append(new_element)
                 has_dangling_empty_slot = False
+
             elements_index += 1
         elif operation == "S":  # SUBSTITUTE -> add slot
             if not minimal_variables or not _has_ending_slot(resulting_elements, False):
                 resulting_elements.append(TemplateSlot())
             has_dangling_empty_slot = False
+            last_was_new_delete_slot = False
             elements_index += 1
         elif operation == "D":  # DELETE -> skip element
             if not _has_ending_slot(resulting_elements, False):
                 resulting_elements.append(TemplateSlot())
                 has_dangling_empty_slot = True
+                last_was_new_delete_slot = True
             elements_index += 1
         elif operation == "I":  # INSERT -> add slot & stay
             if not _has_ending_slot(resulting_elements, False):
                 resulting_elements.append(TemplateSlot())
                 has_dangling_empty_slot = True
+            last_was_new_delete_slot = False
 
     return resulting_elements
