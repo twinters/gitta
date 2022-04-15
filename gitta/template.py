@@ -355,16 +355,18 @@ class Template:
         template1: "Template",
         template2: "Template",
         minimal_variables: bool = True,
-        allow_longer_template=False,
+        # allow_longer_template=False,
         min_non_slot_elements=None,
         allow_empty_string=True,
     ) -> Iterator["Template"]:
         distances_table = WagnerFischer(template1._elements, template2._elements)
 
-        def is_valid_merge(t: Template) -> bool:
-            # Check length
-            return allow_longer_template or (
-                t.length() <= template1.length() or t.length() <= template2.length()
+        def is_valid_merge(merged_template: Template) -> bool:
+            # Check length: if "allow_empty_string", then the merged template does not have to be shorter than the
+            # original two (because "a b c" + "b c d" = "[slot] b c [slot]")
+            return allow_empty_string or (
+                merged_template.length() <= template1.length()
+                or merged_template.length() <= template2.length()
             )
 
         return (
