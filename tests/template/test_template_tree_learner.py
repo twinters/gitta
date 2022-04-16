@@ -356,11 +356,10 @@ class TemplateTreeLearnerTest(unittest.TestCase):
         dataset = list(self.hello_world_small.generate_all_string())
         self.check_same_tree_learned(learner, dataset)
 
-    # TODO: Fix
-    # def test_same_tree_induction_larger(self):
-    #     learner = TemplateLatticeLearner(minimal_variables=True, words_per_leaf_slot=2)
-    #     dataset = list(self.hello_world_and_world_adjective.generate_all_string())
-    #     self.check_same_tree_learned(learner, dataset)
+    def test_same_tree_induction_larger(self):
+        learner = TemplateLatticeLearner(minimal_variables=True, words_per_leaf_slot=2)
+        dataset = list(self.hello_world_and_world_adjective.generate_all_string())
+        self.check_same_tree_learned(learner, dataset)
 
     def test_get_best_merge_candidate(self):
         learner = TemplateLatticeLearner(minimal_variables=True, words_per_leaf_slot=2)
@@ -478,7 +477,10 @@ class TemplateTreeLearnerTest(unittest.TestCase):
         template_1 = Template.from_string("who sang i want to be with you everywhere")
         template_2 = Template.from_string("who sang i only want to be with you")
 
-        learner._get_best_merge_candidate(template_1, template_2)
+        merge = learner._get_best_merge_candidate(template_1, template_2)
+        self.assertEqual(
+            Template.from_string("who sang i [SLOT] want to be with you [SLOT]"), merge.get_merged_template()
+        )
 
 
 if __name__ == "__main__":
