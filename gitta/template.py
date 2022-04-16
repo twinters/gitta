@@ -602,7 +602,7 @@ def convert_template_elements_from_wagner_fischer(
     # Check if last was a delete
     last_was_new_delete_slot = False
 
-    for operation in alignment:
+    for (i, operation) in enumerate(alignment):
         if operation == "M":  # KEEP
             new_element: TemplateElement = elements[elements_index]
             if not new_element.is_slot() or (
@@ -622,6 +622,7 @@ def convert_template_elements_from_wagner_fischer(
                     not has_dangling_empty_slot and not last_was_new_delete_slot
                 ):
                     resulting_elements.append(new_element)
+                last_was_new_delete_slot = False
                 has_dangling_empty_slot = False
 
             elements_index += 1
@@ -638,6 +639,11 @@ def convert_template_elements_from_wagner_fischer(
                 last_was_new_delete_slot = True
             elements_index += 1
         elif operation == "I":  # INSERT -> add slot & stay
+            # Check if it is the last operation when allow_empty_string=False, because if so, it is disallowed to insert
+            # a new slot at the end! Pop the last element and insert a slot!
+            if not allow_empty_string and i == len(alignment) - 1:
+                resulting_elements.pop()
+
             if not _has_ending_slot(resulting_elements, False):
                 resulting_elements.append(TemplateSlot())
                 has_dangling_empty_slot = True
