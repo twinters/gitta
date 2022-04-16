@@ -220,6 +220,36 @@ class TemplateTest(unittest.TestCase):
             ),
         )
 
+        self.assertEqual(
+            "[SLOT]",
+            calculate_merged_string(
+                "a b c", "b c d",
+                allow_empty_string=False
+            ),
+        )
+
+        self.assertEqual(
+            "[SLOT] c [SLOT]",
+            calculate_merged_string(
+                "a b c d ", "b c d e",
+                allow_empty_string=False
+            ),
+        )
+        self.assertEqual(
+            "[SLOT]",
+            calculate_merged_string(
+                "a a b c", "b c d",
+                allow_empty_string=False
+            ),
+        )
+        self.assertEqual(
+            "x y z [SLOT]",
+            calculate_merged_string(
+                "x y z a a b c", "x y z b c d",
+                allow_empty_string=False
+            ),
+        )
+
     def test_merge_exists(self):
         self.assertTrue(
             calculate_merged_string("a [SLOT]", "[SLOT] a")
