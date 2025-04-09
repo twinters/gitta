@@ -32,12 +32,12 @@ class GrammarLearning(unittest.TestCase):
         )
 
     def check_grammar_induction_correctness(
-        self,
-        expected_grammar: ContextFreeGrammar,
-        dataset: List[str] = None,
-        words_per_slot=1,
-        prune_redundant=True,
-        minimal_variables=True,
+            self,
+            expected_grammar: ContextFreeGrammar,
+            dataset: List[str] = None,
+            words_per_slot=1,
+            prune_redundant=True,
+            minimal_variables=True,
     ) -> ContextFreeGrammar:
         if dataset is None:
             dataset = expected_grammar.generate_all_string()
@@ -61,11 +61,11 @@ class GrammarLearning(unittest.TestCase):
         return induced_grammar
 
     def check_grammar_expansion(
-        self, grammar: ContextFreeGrammar, expected_expansion: Collection[str]
+            self, grammar: ContextFreeGrammar, expected_expansion: Collection[str]
     ):
         """ Check that grammar indeed generates the dataset it learned from """
         generated_dataset = grammar.generate_all_string()
-        self.assertEqual(set(expected_expansion), set(generated_dataset))
+        self.assertEqual(sorted(expected_expansion), sorted(generated_dataset))
 
     # Normal case
     def test_small_grammar_induction(self):
@@ -176,7 +176,7 @@ class GrammarLearning(unittest.TestCase):
     def test_slot_repeat(self):
         grammar = self.check_grammar_induction_correctness(
             ContextFreeGrammar.from_string(
-                {"origin": ["<a> <a>"], "a": ["1", "2", "3"],}
+                {"origin": ["<a> <a>"], "a": ["1", "2", "3"], }
             ),
             words_per_slot=1,
             minimal_variables=False,
