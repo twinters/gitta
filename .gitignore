@@ -72,3 +72,5 @@ venv/
 .idea/
 
 gitta/__pycache__/
+tests/grammar/__pycache__/
+tests/template/__pycache__/
