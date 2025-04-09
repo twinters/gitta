@@ -612,9 +612,9 @@ def convert_template_elements_from_wagner_fischer(
                 # Remove last slot if it is named and there is a new slot coming in
                 if (
                     new_element.is_slot()
-                    and len(elements) > 1
+                    and len(resulting_elements) > 1
                     and merge_named_slots
-                    and elements[len(elements) - 1].is_named()
+                    and resulting_elements[len(resulting_elements) - 1].is_named()
                 ):
                     resulting_elements.pop()
 
