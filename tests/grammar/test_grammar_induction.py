@@ -1,15 +1,12 @@
-import random
 import unittest
 from typing import List, Collection
 
-import template_tree_visualiser
 from gitta import grammar_induction
 from gitta.context_free_grammar import ContextFreeGrammar
 from gitta.template import Template
 from gitta.template_tree_visualiser import render_tree_string
 
 import random
-from pathlib import Path
 
 
 def log_tree(text, template_tree):
