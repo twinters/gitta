@@ -38,6 +38,7 @@ class GrammarLearning(unittest.TestCase):
             words_per_slot=1,
             prune_redundant=True,
             minimal_variables=True,
+            allow_empty_string=True,
     ) -> ContextFreeGrammar:
         if dataset is None:
             dataset = expected_grammar.generate_all_string()
@@ -46,6 +47,7 @@ class GrammarLearning(unittest.TestCase):
             words_per_slot=words_per_slot,
             prune_redundant=prune_redundant,
             minimal_variables=minimal_variables,
+            allow_empty_string=allow_empty_string,
         )
 
         print(induced_grammar)
@@ -57,6 +59,7 @@ class GrammarLearning(unittest.TestCase):
 
         # Check that the grammar is representable as string, without exception
         self.assertTrue(len(str(induced_grammar)) > 0)
+        self.assertTrue(len(str(induced_grammar.to_json())) > 0)
 
         return induced_grammar
 
@@ -66,6 +69,39 @@ class GrammarLearning(unittest.TestCase):
         """ Check that grammar indeed generates the dataset it learned from """
         generated_dataset = grammar.generate_all_string()
         self.assertEqual(sorted(expected_expansion), sorted(generated_dataset))
+
+    def check_same_grammar_expansion_and_not_larger(self,
+            expected_grammar: ContextFreeGrammar,
+            words_per_slot=1,
+            prune_redundant=True,
+            minimal_variables=True,
+            allow_empty_string=True,
+            relative_similarity_threshold=1,
+    ):
+        dataset = list(expected_grammar.generate_all_string())
+
+        # Check if grammar generates same dataset
+        induced_grammar = grammar_induction.induce_grammar_using_template_trees(
+            dataset,
+            words_per_slot=words_per_slot,
+            prune_redundant=prune_redundant,
+            minimal_variables=minimal_variables,
+            allow_empty_string=allow_empty_string,
+            relative_similarity_threshold=relative_similarity_threshold,
+        )
+
+        print(induced_grammar)
+
+        # Check that number of rules in the induced grammar is smaller than the given grammar
+        print(induced_grammar.get_size(), expected_grammar.get_size())
+        self.assertTrue(induced_grammar.get_size() <= expected_grammar.get_size())
+
+        # Check that same grammar expansion
+        induced_grammar_dataset = list(induced_grammar.generate_all_string())
+        self.assertEqual(sorted(dataset), sorted(induced_grammar_dataset))
+
+        return induced_grammar
+
 
     # Normal case
     def test_small_grammar_induction(self):
@@ -301,20 +337,20 @@ class GrammarLearning(unittest.TestCase):
         print(grammar)
         self.assertFalse(grammar.is_recursive())
 
-    # def test_hello_world_multiple_deep_no_separator(self):
-    #     # Check if grammar generates same dataset
-    #     grammar = self.check_grammar_induction_correctness(
-    #         ContextFreeGrammar.from_string(
-    #             {
-    #                 "origin": ["<a> <b>"],
-    #                 "a": ["1", "2", "3"],
-    #                 "b": ["4", "5", "6", "- <c>"],
-    #                 "c": ["7", "8", "9"],
-    #             }
-    #         ),
-    #         words_per_slot=1,
-    #     )
-    #     print(grammar)
+    def test_hello_world_multiple_deep_no_separator(self):
+        # Check if grammar generates same dataset
+        grammar = self.check_same_grammar_expansion_and_not_larger(
+            ContextFreeGrammar.from_string(
+                {
+                    "origin": ["<a> <b>"],
+                    "a": ["1", "2", "3"],
+                    "b": ["4", "5", "6", "- <c>"],
+                    "c": ["7", "8", "9"],
+                }
+            ),
+            words_per_slot=1,
+        )
+        print(grammar)
 
     # TODO: fix test
     # def test_hello_world_multiple_repeated_1(self):
