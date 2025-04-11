@@ -83,13 +83,14 @@ def _name_and_simplify_tree(
 ) -> Tuple[SlotValues, TemplateTree]:
     """
     Gives a name to all unnamed slots, and simplifies under the independence between slots assumption
+    Also filters out slot values that are no longer referenced after pruning.
     """
     # Give all slots a unique name
     slot_name_generator = alphabetic_slot_name_iterator()
-    named_lattice = learned_tree.name_slots_automatically(slot_name_generator)
+    named_tree = learned_tree.name_slots_automatically(slot_name_generator)
 
     # Find what every slot maps to
-    possible_slot_values = named_lattice.get_slot_values()
+    possible_slot_values = named_tree.get_slot_values()
 
     # Merge similar slots together, to reduce the number of unique slots
     merged_slot_values = possible_slot_values.merge_slots(
@@ -98,7 +99,7 @@ def _name_and_simplify_tree(
 
     # Use merged slots to reduce variables in the template tree
     replacements = merged_slot_values.get_replacements()
-    merged_slots_tree = named_lattice.name_template_slots(replacements)
+    merged_slots_tree = named_tree.name_template_slots(replacements)
 
     return merged_slot_values, merged_slots_tree
 
