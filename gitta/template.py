@@ -369,26 +369,23 @@ class Template:
                 or merged_template.length() <= template2.length()
             )
 
-        return (
-            val
-            for val in (
-                Template(
-                    convert_template_elements_from_wagner_fischer(
-                        template1._elements,
-                        alignment,
-                        minimal_variables=minimal_variables,
-                        merge_named_slots=True,
-                        allow_empty_string=allow_empty_string,
-                    )
+        # Iterate over candidate alignments
+        for alignment in distances_table.alignments():
+            candidate = Template(
+                convert_template_elements_from_wagner_fischer(
+                    template1._elements,
+                    alignment,
+                    minimal_variables=minimal_variables,
+                    merge_named_slots=True,
+                    allow_empty_string=allow_empty_string,
                 )
-                for alignment in distances_table.alignments()
             )
-            if is_valid_merge(val)
-            and (
-                min_non_slot_elements is None
-                or val.get_number_of_non_slots() >= min_non_slot_elements
-            )
-        )
+            # candidate must cover both inputs.
+            if candidate.covers(template1) and candidate.covers(template2):
+                if is_valid_merge(candidate) and (
+                        min_non_slot_elements is None
+                        or candidate.get_number_of_non_slots() >= min_non_slot_elements):
+                    yield candidate
 
     def name_template_slots(self, slot_map: Dict[TemplateSlot, TemplateSlot]):
         new_elements = [
@@ -442,8 +439,8 @@ class Template:
 
 
 def _covers(
-    main_template_elements: Tuple[TemplateElement],
-    test_template_elements: Tuple[TemplateElement],
+        main_template_elements: Tuple[TemplateElement],
+        test_template_elements: Tuple[TemplateElement],
 ) -> bool:
     # If no more main template elements: check if test template is also empty, otherwise it doesn't cover
     if len(main_template_elements) == 0:
@@ -462,9 +459,9 @@ def _covers(
     if main_first.is_slot():
         return (
             # Slot covers no (more) elements
-            _covers(main_template_elements[1:], test_template_elements)
-            # Slot covers this one and also potentialy future ones
-            or _covers(main_template_elements, test_template_elements[1:])
+                _covers(main_template_elements[1:], test_template_elements)
+                # Slot covers this one and also potentialy future ones
+                or _covers(main_template_elements, test_template_elements[1:])
         )
 
     # (main_first is not a slot)
@@ -483,8 +480,8 @@ def _covers(
 
 
 def _extract_content_from_slots(
-    main_template_elements: Tuple[TemplateElement],
-    test_template_elements: Tuple[TemplateElement],
+        main_template_elements: Tuple[TemplateElement],
+        test_template_elements: Tuple[TemplateElement],
 ) -> Optional[Set[Tuple[Template]]]:
     # If empty: only return things if the other is also empty, if so, return set, if not, return None
     if len(main_template_elements) == 0:
@@ -545,7 +542,7 @@ def _extract_content_from_slots(
 
 
 def _add_prefix_to_first(
-    prefix: TemplateElement, tup: Tuple[Template]
+        prefix: TemplateElement, tup: Tuple[Template]
 ) -> Tuple[Template]:
     if len(tup) == 0:
         return tuple([Template([prefix])])
@@ -559,7 +556,7 @@ def _add_prefix_to_first(
 
 
 def _select_lowest_variance_slot_assignment(
-    possibilities: Set[Tuple[Template]],
+        possibilities: Set[Tuple[Template]],
 ) -> Tuple[Template]:
     options_list = list(possibilities)
     if len(options_list) == 1:
@@ -577,21 +574,21 @@ def _select_lowest_variance_slot_assignment(
 
 
 def _has_ending_slot(
-    elements: List[TemplateElement], merge_named_slots: bool = False
+        elements: List[TemplateElement], merge_named_slots: bool = False
 ) -> bool:
     return (
-        len(elements) > 0
-        and elements[len(elements) - 1].is_slot()
-        and (not elements[len(elements) - 1].is_named() or merge_named_slots)
+            len(elements) > 0
+            and elements[len(elements) - 1].is_slot()
+            and (not elements[len(elements) - 1].is_named() or merge_named_slots)
     )
 
 
 def convert_template_elements_from_wagner_fischer(
-    elements: Tuple[TemplateElement],
-    alignment: List[str],
-    minimal_variables=True,
-    merge_named_slots=False,
-    allow_empty_string=True,
+        elements: Tuple[TemplateElement],
+        alignment: List[str],
+        minimal_variables=True,
+        merge_named_slots=False,
+        allow_empty_string=True,
 ) -> List[TemplateElement]:
     resulting_elements = []
     elements_index = 0
@@ -606,20 +603,20 @@ def convert_template_elements_from_wagner_fischer(
         if operation == "M":  # KEEP
             new_element: TemplateElement = elements[elements_index]
             if not new_element.is_slot() or (
-                not minimal_variables
-                or not _has_ending_slot(resulting_elements, merge_named_slots)
+                    not minimal_variables
+                    or not _has_ending_slot(resulting_elements, merge_named_slots)
             ):
                 # Remove last slot if it is named and there is a new slot coming in
                 if (
-                    new_element.is_slot()
-                    and len(resulting_elements) > 1
-                    and merge_named_slots
-                    and resulting_elements[len(resulting_elements) - 1].is_named()
+                        new_element.is_slot()
+                        and len(resulting_elements) > 1
+                        and merge_named_slots
+                        and resulting_elements[len(resulting_elements) - 1].is_named()
                 ):
                     resulting_elements.pop()
 
                 if allow_empty_string or (
-                    not has_dangling_empty_slot and not last_was_new_delete_slot
+                        not has_dangling_empty_slot and not last_was_new_delete_slot
                 ):
                     resulting_elements.append(new_element)
                 last_was_new_delete_slot = False
