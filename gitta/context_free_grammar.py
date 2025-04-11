@@ -293,12 +293,14 @@ class ContextFreeGrammar:
             element = queue.get()
             sorted_slots.append(element)
 
-            values = self._grammar[element]
-            for template in values:
-                template_slots = template.get_slots()
-                for slot in template_slots:
-                    if slot not in sorted_slots:
-                        queue.put(slot)
+            # Only process existing keys
+            if element in self._grammar:
+                values = self._grammar[element]
+                for template in values:
+                    template_slots = template.get_slots()
+                    for slot in template_slots:
+                        if slot not in sorted_slots:
+                            queue.put(slot)
 
         # Add remaining ( = unreachable slots from start)
         if len(slots) > len(sorted_slots):
