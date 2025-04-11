@@ -286,7 +286,7 @@ class TemplateLatticeLearner(TemplateTreeLearner):
         """
         result: List[MergeCandidate] = []
 
-        templates = list(set(all_templates))
+        templates = sorted(set(all_templates), key=lambda t: str(t))
         number_of_trees = len(templates)
         for i in range(number_of_trees):
             ti: Template = templates[i]
