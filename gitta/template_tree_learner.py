@@ -40,7 +40,7 @@ class MergeCandidate:
         return self._t1 in unmerged_template and self._t2 in unmerged_template
 
     def __lt__(self, other: "MergeCandidate"):
-        return self._distance < other._distance
+        return (self._distance, str(self._t1), str(self._t2)) < (other._distance, str(other._t1), str(other._t2))
 
     def __gt__(self, other: "MergeCandidate"):
         return self._distance > other._distance
