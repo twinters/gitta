@@ -607,7 +607,7 @@ def _chose_matches(i, possible_expansions_match):
         len_possible = len(possible)
         chosen_match_idx = int(index % len_possible)
         chosen_matches[exp] = possible[chosen_match_idx]
-        index = index / len_possible
+        index = index // len_possible
     return chosen_matches
 
 
